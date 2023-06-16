@@ -37,14 +37,8 @@ public class QuestionController {
 
     @PostMapping("/ask")
     public ResponseEntity askQuestion(@RequestBody QuestionDto postQuestionDto) {
-        System.out.println(postQuestionDto.getBody());
-        System.out.println(postQuestionDto.getTitle());
         // 질문 제목, 내용 정보들 저장
         QuestionDto resQuestionDto = questionService.save(postQuestionDto);
-
-        System.out.println(resQuestionDto.getTitle());
-        System.out.println(resQuestionDto.getBody());
-
         return new ResponseEntity(resQuestionDto, HttpStatus.OK);
     }
 
