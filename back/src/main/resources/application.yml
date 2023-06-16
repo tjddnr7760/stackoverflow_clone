@@ -5,7 +5,10 @@ spring:
       path: /h2
   datasource:
     url: jdbc:h2:mem:test
+    driverClassName: org.h2.Driver
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create  # (1) ??? ?? ??
-    show-sql: true      # (2) SQL ?? ??
+      ddl-auto: create  # 연관관계 매핑에 따른 DB 자동생성. 앱을 껐다 키면 리셋되어 새로 생성됨. ddl-auto: update 로 할 시 데이터가
+                        # 휘발되지 않고 남음
+    show-sql: true      # 인텔리제이 로그에 SQL 쿼리문을 띄움. 쿼리가 어떻게 실행되는지 추적할 수 있음.

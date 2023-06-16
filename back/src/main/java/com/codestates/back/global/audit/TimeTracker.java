@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class Auditable {
+public abstract class TimeTracker { // 작성시간 및 수정시간을 추적하는 TimeTracker 클래스. 엔티티 클래스에 extend해서 사용 추천
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
