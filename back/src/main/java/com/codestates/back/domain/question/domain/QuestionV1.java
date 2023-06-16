@@ -1,5 +1,6 @@
 package com.codestates.back.domain.question.domain;
 
+import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,13 @@ public class QuestionV1 implements Question {
 
     @Column
     private Date createdAt;
+
+    @Override
+    public void update(QuestionDto questionDto) {
+        this.title = questionDto.getTitle();
+        this.body = questionDto.getBody();
+        this.createdAt = questionDto.getCreatedAt();
+    }
 
     @Override
     public boolean equals(Object o) {

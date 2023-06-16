@@ -3,7 +3,6 @@ package com.codestates.back.domain.question.controller;
 import com.codestates.back.domain.question.application.QuestionService;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
-import com.codestates.back.domain.question.controller.mapper.QuestionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +16,10 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
-    private final QuestionMapper questionMapper;
 
     @Autowired
-    public QuestionController(QuestionService questionService, QuestionMapper questionMapper) {
+    public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
-        this.questionMapper = questionMapper;
     }
 
     @GetMapping
