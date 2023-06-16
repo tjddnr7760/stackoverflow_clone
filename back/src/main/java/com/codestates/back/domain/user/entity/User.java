@@ -28,7 +28,7 @@ public class User extends TimeTracker {
 
     private String displayName;
 
-    private String role;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Question> questions = new ArrayList<>();
