@@ -12,7 +12,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/questions")
+@RequestMapping("/question")
 public class QuestionController {
 
     private final QuestionService questionService;
@@ -37,8 +37,14 @@ public class QuestionController {
 
     @PostMapping("/ask")
     public ResponseEntity askQuestion(@RequestBody QuestionDto postQuestionDto) {
+        System.out.println(postQuestionDto.getBody());
+        System.out.println(postQuestionDto.getTitle());
         // 질문 제목, 내용 정보들 저장
         QuestionDto resQuestionDto = questionService.save(postQuestionDto);
+
+        System.out.println(resQuestionDto.getTitle());
+        System.out.println(resQuestionDto.getBody());
+
         return new ResponseEntity(resQuestionDto, HttpStatus.OK);
     }
 
@@ -50,7 +56,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{questionId}/edit")
-    public ResponseEntity directQuestionEditPage(@PathVariable("questionId") long questionsId) {
+    public ResponseEntity directQuestionEditPage(@PathVariable("questionId") long questionId) {
         // 질문 수정 페이지 이동
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -66,7 +72,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{questionId}")
-    public ResponseEntity deleteButtonQuestion(@PathVariable("questionsId") long questionId) {
+    public ResponseEntity deleteButtonQuestion(@PathVariable("questionId") long questionId) {
         // 삭제 버튼 누를시
         questionService.deleteById(questionId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);

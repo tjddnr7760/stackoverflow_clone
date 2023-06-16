@@ -5,10 +5,12 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
 //@Component
+@Getter
 @Entity
 public class QuestionV1 implements Question {
     @Id
@@ -22,13 +24,21 @@ public class QuestionV1 implements Question {
     private String body;
 
     @Column
-    private Date createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    protected QuestionV1() {
+    }
+
+    public QuestionV1(String title, String body) {
+        this.title = title;
+        this.body = body;
+    }
 
     @Override
     public void update(QuestionDto questionDto) {
         this.title = questionDto.getTitle();
         this.body = questionDto.getBody();
-        this.createdAt = questionDto.getCreatedAt();
+        this.createdAt = LocalDateTime.now();
     }
 
     @Override

@@ -32,6 +32,10 @@ public class QuestionServiceV1 implements QuestionService{
     @Override
     public QuestionDto save(QuestionDto postQuestionDto) {
         QuestionV1 question = questionMapper.postQuestionDtoToQuestionV1(postQuestionDto);
+
+        System.out.println(question.getTitle());
+        System.out.println(question.getBody());
+
         question = questionRepository.save(question);
         return questionMapper.questionv1ToQuestionDto(question);
     }
