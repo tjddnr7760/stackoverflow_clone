@@ -1,7 +1,7 @@
 package com.codestates.back.domain.user.entity;
 
 import com.codestates.back.domain.answer.entity.Answer;
-import com.codestates.back.domain.question.entity.Question;
+import com.codestates.back.domain.question.domain.QuestionV1;
 import com.codestates.back.global.audit.TimeTracker;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +32,7 @@ public class User extends TimeTracker {
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Question> questions = new ArrayList<>();
+    private List<QuestionV1> questions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Answer> answers = new ArrayList<>();

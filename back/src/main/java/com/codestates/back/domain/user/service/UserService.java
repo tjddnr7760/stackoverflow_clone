@@ -1,11 +1,10 @@
 package com.codestates.back.domain.user.service;
 
 import com.codestates.back.domain.answer.entity.Answer;
-import com.codestates.back.domain.question.entity.Question;
+import com.codestates.back.domain.question.domain.QuestionV1;
 import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.repository.UserRepository;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -93,7 +92,7 @@ public class UserService {
     public UserDto.MyPage showMyPage(long userId) {
         User user = findVerifiedUser(userId);
 
-        List<Question> questionsList = user.getQuestions();
+        List<QuestionV1> questionsList = user.getQuestions();
         List<Answer> answersList = user.getAnswers();
 
         long totalQuestions = questionsList.size();

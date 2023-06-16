@@ -1,6 +1,7 @@
 package com.codestates.back.domain.question.domain;
 
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
+import com.codestates.back.domain.user.entity.User;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -53,4 +54,8 @@ public class QuestionV1 implements Question {
     public int hashCode() {
         return Objects.hash(questionId, title, body, createdAt);
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
 }
