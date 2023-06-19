@@ -51,6 +51,7 @@ public class UserDto {
     public static class Response {
         private long userId;
         private String email;
+        private String displayName;
         private String password;
     }
 

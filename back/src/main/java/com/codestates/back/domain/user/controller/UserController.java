@@ -7,12 +7,15 @@ import com.codestates.back.domain.user.mapper.UserMapper;
 import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.dto.SingleResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 
 @RestController
@@ -33,25 +36,29 @@ public class UserController {
     public ResponseEntity postUser(@Valid @RequestBody UserDto.Post requestBody) {
         User user = mapper.userPostToUser(requestBody);
 
-
         User createdUser = userService.signUpUser(user);
 
-        return new ResponseEntity<>(new SingleResponseDto<>("회원가입이 성공적으로 완료되었습니다."), HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/users/login")); // 로그인 페이지 URI로 업데이트
+
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .headers(headers)
+                .build();
     }
 
     // 회원정보 수정. URI 주소는 우선 실제 웹과 똑같음
-    @PatchMapping("/edit/{user-id}")
+    @PatchMapping("/edit/{userId}")
     public ResponseEntity patchUser(@PathVariable long userId,
-                                    @Valid @RequestBody UserDto.Update requestbody) {
-        requestbody.setUserId(userId);
+                                    @Valid @RequestBody UserDto.Update requestBody) {
+        requestBody.setUserId(userId);
 
-        User user = userService.updateUser(mapper.userPatchToUser(requestbody));
+        User user = userService.updateUser(mapper.userPatchToUser(requestBody));
 
         return new ResponseEntity<>(new SingleResponseDto<>(mapper.userToUserResponse(user)), HttpStatus.OK);
     }
 
     // 단일 유저정보 조회(마이페이지 아님). 마이페지이를 구현 못해서 일단 개별 회원조회로 만들었습니다.
-    @GetMapping("/{user-id}")
+    @GetMapping("/{userId}")
     public ResponseEntity getUser(@PathVariable long userId) {
         User user = userService.findUser(userId);
 
@@ -61,7 +68,7 @@ public class UserController {
 
 
     // 회원탈퇴
-    @DeleteMapping("/delete/{user-id}")
+    @DeleteMapping("/delete/{userId}")
     public ResponseEntity deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
 
