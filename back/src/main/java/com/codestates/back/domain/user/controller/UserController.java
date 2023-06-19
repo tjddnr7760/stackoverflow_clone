@@ -40,18 +40,18 @@ public class UserController {
     }
 
     // 회원정보 수정. URI 주소는 우선 실제 웹과 똑같음
-    @PatchMapping("/edit/{user-id}")
+    @PatchMapping("/edit/{userId}")
     public ResponseEntity patchUser(@PathVariable long userId,
-                                    @Valid @RequestBody UserDto.Update requestbody) {
-        requestbody.setUserId(userId);
+                                    @Valid @RequestBody UserDto.Update requestBody) {
+        requestBody.setUserId(userId);
 
-        User user = userService.updateUser(mapper.userPatchToUser(requestbody));
+        User user = userService.updateUser(mapper.userPatchToUser(requestBody));
 
         return new ResponseEntity<>(new SingleResponseDto<>(mapper.userToUserResponse(user)), HttpStatus.OK);
     }
 
     // 단일 유저정보 조회(마이페이지 아님). 마이페지이를 구현 못해서 일단 개별 회원조회로 만들었습니다.
-    @GetMapping("/{user-id}")
+    @GetMapping("/{userId}")
     public ResponseEntity getUser(@PathVariable long userId) {
         User user = userService.findUser(userId);
 
@@ -61,7 +61,7 @@ public class UserController {
 
 
     // 회원탈퇴
-    @DeleteMapping("/delete/{user-id}")
+    @DeleteMapping("/delete/{userId}")
     public ResponseEntity deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
 

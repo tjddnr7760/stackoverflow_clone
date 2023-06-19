@@ -23,7 +23,7 @@ public class AnswerService {
     public Answer findVerifiedAnswer (long answerId) {
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         Answer findAnswer = optionalAnswer.orElseThrow(() ->
-                new BusinessLogicException());
+                new IllegalArgumentException());
         return findAnswer;
     }
 
