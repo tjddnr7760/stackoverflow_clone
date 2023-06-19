@@ -1,7 +1,7 @@
 package com.codestates.back.domain.user.service;
 
 import com.codestates.back.domain.answer.entity.Answer;
-import com.codestates.back.domain.question.domain.QuestionV1;
+import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.repository.UserRepository;
@@ -86,7 +86,7 @@ public class UserService {
     public UserDto.MyPage showMyPage(long userId) {
         User user = findVerifiedUser(userId);
 
-        List<QuestionV1> questionsList = user.getQuestions();
+        List<Question> questionsList = user.getQuestions();
         List<Answer> answersList = user.getAnswers();
 
         long totalQuestions = questionsList.size();

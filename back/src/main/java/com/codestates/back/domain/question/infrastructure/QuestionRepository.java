@@ -1,7 +1,7 @@
 package com.codestates.back.domain.question.infrastructure;
 
-import com.codestates.back.domain.question.domain.QuestionV1;
+import com.codestates.back.domain.question.domain.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface QuestionRepository extends JpaRepository<QuestionV1, Long> {
+public interface QuestionRepository extends JpaRepository<Question, Long> {
 }

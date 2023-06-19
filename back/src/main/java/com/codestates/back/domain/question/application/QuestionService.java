@@ -9,7 +9,7 @@ public interface QuestionService {
 
     List<QuestionDto> findAllQuestions();
 
-    QuestionDto save(QuestionDto postQuestionDto);
+    QuestionDto save(QuestionDto postQuestionDto, long userId);
 
     QuestionAnswersDto findQuestionAnswers(long questionsId);
 
