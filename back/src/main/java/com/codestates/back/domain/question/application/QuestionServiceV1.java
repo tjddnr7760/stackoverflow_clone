@@ -72,7 +72,7 @@ public class QuestionServiceV1 implements QuestionService{
 
     @Override
     public QuestionDto updateQuestion(QuestionDto questionDto) {
-        Optional<Question> optionalQuestionV1 = questionRepository.findById(questionDto.getQuestionId());
+        Optional<Question> optionalQuestionV1 = questionRepository.findById(questionDto.getId());
         Question question = optionalQuestionV1.orElseThrow(() ->
                 // 질문 아이디로 질문 못찾을시
                 new BusinessLogicException(ExceptionCode.QUESTION_NOT_FOUND));
