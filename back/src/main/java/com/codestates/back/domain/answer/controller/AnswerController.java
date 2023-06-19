@@ -5,7 +5,6 @@ import com.codestates.back.domain.answer.dto.AnswerPostDto;
 import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.answer.mapper.AnswerMapper;
 import com.codestates.back.domain.answer.service.AnswerService;
-import com.codestates.back.domain.question.entity.Question;
 import com.codestates.back.global.response.SingleResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
