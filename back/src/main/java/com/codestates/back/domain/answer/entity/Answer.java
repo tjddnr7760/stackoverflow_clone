@@ -1,6 +1,5 @@
 package com.codestates.back.domain.answer.entity;
 
-<<<<<<< Updated upstream
 import com.codestates.back.domain.question.domain.QuestionV1;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.global.audit.TimeTracker;
@@ -8,15 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-=======
-import com.codestates.back.domain.question.entity.Question;
-import com.codestates.back.domain.user.entity.User;
-import com.codestates.back.global.audit.Auditable;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
->>>>>>> Stashed changes
 
 import javax.persistence.*;
 
@@ -25,11 +15,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "ANSWERS")
-<<<<<<< Updated upstream
 public class Answer extends TimeTracker {
-=======
-public class Answer extends Auditable {
->>>>>>> Stashed changes
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
@@ -51,15 +37,9 @@ public class Answer extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "QUESTION_ID")
-<<<<<<< Updated upstream
     private QuestionV1 question;
 
     public void addQuestion(QuestionV1 question) {
-=======
-    private Question question;
-
-    public void addQuestion(Question question) {
->>>>>>> Stashed changes
 
         this.question = question;
     }
@@ -78,8 +58,4 @@ public class Answer extends Auditable {
 
 
 
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

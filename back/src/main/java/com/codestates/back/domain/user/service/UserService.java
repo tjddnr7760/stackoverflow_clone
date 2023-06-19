@@ -5,6 +5,8 @@ import com.codestates.back.domain.question.domain.QuestionV1;
 import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.repository.UserRepository;
+import com.codestates.back.global.exception.BusinessLogicException;
+import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -68,9 +70,7 @@ public class UserService {
     public User findVerifiedUser(long userId) {
 
         Optional<User> optionalUser = userRepository.findById(userId);
-        User findUser = optionalUser.get();
-                // new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
-        // 아직 유저를 찾을 수 없는 경우의 예외 처리 구현전임
+        User findUser = optionalUser.orElseThrow(() -> new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         return findUser;
     }
@@ -78,14 +78,8 @@ public class UserService {
     private void verifyExistsEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
 
-        /* 유저 이메일 없는 경우 예외처리 구현전임
         if (user.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.USER_EXISTS);
-        }
-        */
-
-        if (user.isPresent()) {
-            throw new IllegalArgumentException("이미 사용중인 이메일입니다.");
         }
     }
 
