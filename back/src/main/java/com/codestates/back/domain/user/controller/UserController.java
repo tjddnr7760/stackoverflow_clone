@@ -7,12 +7,15 @@ import com.codestates.back.domain.user.mapper.UserMapper;
 import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.dto.SingleResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 
 
 @RestController
@@ -33,10 +36,14 @@ public class UserController {
     public ResponseEntity postUser(@Valid @RequestBody UserDto.Post requestBody) {
         User user = mapper.userPostToUser(requestBody);
 
-
         User createdUser = userService.signUpUser(user);
 
-        return new ResponseEntity<>(new SingleResponseDto<>("회원가입이 성공적으로 완료되었습니다."), HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/users/login")); // 로그인 페이지 URI로 업데이트
+
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .headers(headers)
+                .build();
     }
 
     // 회원정보 수정. URI 주소는 우선 실제 웹과 똑같음

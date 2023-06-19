@@ -85,7 +85,7 @@ public class UserApiTest {
 
         // then
         actions
-                .andExpect(status().isCreated())
+                .andExpect(status().isSeeOther())
                 .andDo(document("회원가입",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
