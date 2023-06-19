@@ -3,6 +3,7 @@ package com.codestates.back.domain.question.controller;
 import com.codestates.back.domain.question.application.QuestionService;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("/question")
@@ -38,8 +40,11 @@ public class QuestionController {
     @PostMapping("/ask")
     public ResponseEntity askQuestion(@RequestBody QuestionDto postQuestionDto) {
         // 질문 제목, 내용 정보들 저장
-        QuestionDto resQuestionDto = questionService.save(postQuestionDto);
-        return new ResponseEntity(resQuestionDto, HttpStatus.OK);
+        //임의로 유저 id 저장, 나중에 스프링 시큐리티로 유저아이디 가져와야함
+        Long userId = 1L;
+        log.info("질문 내용 저장 = {}", postQuestionDto);
+        QuestionDto resQuestionDto = questionService.save(postQuestionDto, userId);
+        return new ResponseEntity(resQuestionDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{questionId}")

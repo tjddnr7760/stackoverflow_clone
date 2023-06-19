@@ -10,9 +10,13 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class QuestionAnswersDto {
-    private Long questionId;
+    private Long id;
     private String title;
     private String body;
     private Date createdAt;
     List<AnswerDto> answers;
+
+    public void setAnswers(List<AnswerDto> answers) {
+        this.answers = answers;
+    }
 }

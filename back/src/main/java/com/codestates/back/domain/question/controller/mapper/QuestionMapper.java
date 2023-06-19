@@ -1,16 +1,23 @@
 package com.codestates.back.domain.question.controller.mapper;
 
+import com.codestates.back.domain.answer.dto.AnswerDto;
+import com.codestates.back.domain.answer.entity.Answer;
+import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
-import com.codestates.back.domain.question.domain.QuestionV1;
+import com.codestates.back.domain.question.domain.Question;
 import org.mapstruct.Mapper;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
-    List<QuestionDto> questionV1ToQuestionDtos(List<QuestionV1> questionV1s);
+    List<QuestionDto> questionToQuestionDtos(List<Question> questionV1s);
 
-    QuestionV1 postQuestionDtoToQuestionV1(QuestionDto postQuestionDto);
+    Question postQuestionDtoToQuestion(QuestionDto postQuestionDto);
 
-    QuestionDto questionv1ToQuestionDto(QuestionV1 question);
+    QuestionDto questionToQuestionDto(Question question);
+
+    QuestionAnswersDto questionToQuestionAnswersDto(Question question);
+
+    List<AnswerDto> answersToAnswerDto(List<Answer> answers);
 }

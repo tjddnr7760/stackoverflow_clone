@@ -1,61 +1,55 @@
 package com.codestates.back.domain.question.domain;
 
+import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import com.codestates.back.domain.user.entity.User;
+import com.codestates.back.global.audit.TimeTracker;
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-//@Component
-@Getter
 @Entity
-public class QuestionV1 implements Question {
+@Getter
+@Table(name = "question")
+public class Question extends TimeTracker {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionId;
+    @Column(name = "question_id")
+    private Long id;
 
-    @Column
     private String title;
 
-    @Column
     private String body;
 
-    @Column
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    protected QuestionV1() {
+    @OneToMany(mappedBy = "question")
+    private List<Answer> answers = new ArrayList<>();
+
+    protected Question() {
     }
 
-    public QuestionV1(String title, String body) {
+    public Question(String title, String body) {
         this.title = title;
         this.body = body;
     }
 
-    @Override
     public void update(QuestionDto questionDto) {
         this.title = questionDto.getTitle();
         this.body = questionDto.getBody();
-        this.createdAt = LocalDateTime.now();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        QuestionV1 that = (QuestionV1) o;
-        return Objects.equals(questionId, that.questionId) && Objects.equals(title, that.title) && Objects.equals(body, that.body) && Objects.equals(createdAt, that.createdAt);
+    public void setUser(User user) {
+        this.user = user;
+        // 양방향 매핑 해줘야함. user에서도 question 추가해줘야함.
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(questionId, title, body, createdAt);
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
     }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private User user;
 }
