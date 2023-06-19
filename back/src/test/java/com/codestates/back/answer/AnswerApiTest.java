@@ -16,16 +16,25 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static com.codestates.back.util.ApiDocumentUtils.getRequestPreProcessor;
+import static com.codestates.back.util.ApiDocumentUtils.getResponsePreProcessor;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -70,7 +79,19 @@ public class AnswerApiTest {
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(answerDto.getId()))
-                .andExpect(jsonPath("$.body").value(answerDto.getBody()));
+                .andExpect(jsonPath("$.body").value(answerDto.getBody()))
+                .andDo(document("get-answer-byAnswerId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                               parameterWithName("answer-id").description("답변 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("답변 저장")
@@ -99,7 +120,24 @@ public class AnswerApiTest {
         actions
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(answerDto.getId()))
-                .andExpect(jsonPath("$.body").value(answerDto.getBody()));
+                .andExpect(jsonPath("$.body").value(answerDto.getBody()))
+                .andDo(document("post-saveAnswer-byQuestionId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("question-id").description("질문 아이디")
+                        ),
+                        requestFields(
+                                List.of(
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 내용")
+                                )
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("답변 페이지 이동")
@@ -117,7 +155,19 @@ public class AnswerApiTest {
 
         // then
         actions
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("get-answerPage-byAnswerId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("answer-id").description("답변 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("답변 수정")
@@ -146,7 +196,24 @@ public class AnswerApiTest {
         actions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(answerDto.getId()))
-                .andExpect(jsonPath("$.body").value(answerDto.getBody()));
+                .andExpect(jsonPath("$.body").value(answerDto.getBody()))
+                .andDo(document("patch-answer-byAnswerId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("answer-id").description("답변 아이디")
+                        ),
+                        requestFields(
+                                List.of(
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 수정 내용")
+                                )
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("답변 삭제")
@@ -165,6 +232,18 @@ public class AnswerApiTest {
 
         // then
         actions
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(document("delete-answer-byAnswerId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("answer-id").description("답변 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -25,10 +26,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codestates.back.util.ApiDocumentUtils.getRequestPreProcessor;
+import static com.codestates.back.util.ApiDocumentUtils.getResponsePreProcessor;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -86,7 +93,16 @@ public class QuestionApiTest {
                 .andExpect(jsonPath("$[0].body").value(questionDtos.get(0).getBody()))
                 .andExpect(jsonPath("$[1].id").value(questionDtos.get(1).getId()))
                 .andExpect(jsonPath("$[1].title").value(questionDtos.get(1).getTitle()))
-                .andExpect(jsonPath("$[1].body").value(questionDtos.get(1).getBody()));
+                .andExpect(jsonPath("$[1].body").value(questionDtos.get(1).getBody()))
+                .andDo(document("get-allQuestions",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("질문 등록 페이지 이동") // DisplayName은 필수는 아닙니다. 원하는대로 변경하시거나 지우셔도 됩니다.
@@ -101,7 +117,16 @@ public class QuestionApiTest {
 
         // then
         actions
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("get-askQuestionPage",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("질문 저장")
@@ -131,7 +156,22 @@ public class QuestionApiTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(questionDto.getId()))
                 .andExpect(jsonPath("$.title").value(questionDto.getTitle()))
-                .andExpect(jsonPath("$.body").value(questionDto.getBody()));
+                .andExpect(jsonPath("$.body").value(questionDto.getBody()))
+                .andDo(document("post-askQuestion",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        requestFields(
+                                List.of(
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 제목"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용")
+                                )
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("특정 질문페이지 이동")
@@ -174,22 +214,48 @@ public class QuestionApiTest {
                 .andExpect(jsonPath("$.answers[0].id").value(questionAnswersDto.getAnswers().get(0).getId()))
                 .andExpect(jsonPath("$.answers[0].body").value(questionAnswersDto.getAnswers().get(0).getBody()))
                 .andExpect(jsonPath("$.answers[1].id").value(questionAnswersDto.getAnswers().get(1).getId()))
-                .andExpect(jsonPath("$.answers[1].body").value(questionAnswersDto.getAnswers().get(1).getBody()));
+                .andExpect(jsonPath("$.answers[1].body").value(questionAnswersDto.getAnswers().get(1).getBody()))
+                .andDo(document("get-question-byQuestionId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("question-id").description("질문 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("질문 수정 페이지 이동")
     @Test
     public void updateQuestionPageTest() throws Exception {
         // given
+        long questionId = 1L;
+
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/1/edit")
+                        get("/question/" + questionId +  "/edit")
                 );
 
         // then
         actions
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("get-questionUpdatePage-byQuestionId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("question-id").description("질문 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("질문 수정")
@@ -221,7 +287,25 @@ public class QuestionApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(questionDto.getId()))
                 .andExpect(jsonPath("$.title").value(questionDto.getTitle()))
-                .andExpect(jsonPath("$.body").value(questionDto.getBody()));
+                .andExpect(jsonPath("$.body").value(questionDto.getBody()))
+                .andDo(document("patch-question-byQuestionId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("question-id").description("질문 아이디")
+                        ),
+                        requestFields(
+                                List.of(
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 제목"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용")
+                                )
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 
     @DisplayName("질문 삭제")
@@ -240,6 +324,18 @@ public class QuestionApiTest {
 
         // then
         actions
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(document("delete-question-byQuestionId",
+                        getRequestPreProcessor(),
+                        getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("question-id").description("질문 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath().type().description(),
+                                )
+                        )
+                ));
     }
 }
