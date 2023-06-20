@@ -6,6 +6,7 @@ import com.codestates.back.domain.question.controller.QuestionController;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import com.codestates.back.domain.question.controller.mapper.QuestionMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +34,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,7 +59,10 @@ public class QuestionApiTest {
     @Autowired
     private Gson gson;
 
-    @DisplayName("질문 전체 목록") // DisplayName은 필수는 아닙니다. 원하는대로 변경하시거나 지우셔도 됩니다.
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @DisplayName("질문 전체 목록")
     @Test
     public void getAllQuestionsTest() throws Exception {
         // given
@@ -66,13 +70,13 @@ public class QuestionApiTest {
                 1L,
                 "질문제목1",
                 "질문답변1",
-                null
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
         );
         QuestionDto questionDto2 = new QuestionDto(
                 2L,
                 "질문제목2",
                 "질문답변2",
-                null
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
         );
         List<QuestionDto> questionDtos = new ArrayList<>();
         questionDtos.add(questionDto1);
@@ -99,7 +103,11 @@ public class QuestionApiTest {
                         getResponsePreProcessor(),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("[]").description("전체 응답"),
+                                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("질문 아이디"),
+                                        fieldWithPath("[].title").type(JsonFieldType.STRING).description("질문 제목"),
+                                        fieldWithPath("[].body").type(JsonFieldType.STRING).description("질문 내용"),
+                                        fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성 시간")
                                 )
                         )
                 ));
@@ -120,12 +128,7 @@ public class QuestionApiTest {
                 .andExpect(status().isOk())
                 .andDo(document("get-askQuestionPage",
                         getRequestPreProcessor(),
-                        getResponsePreProcessor(),
-                        responseFields(
-                                List.of(
-                                        fieldWithPath().type().description(),
-                                )
-                        )
+                        getResponsePreProcessor()
                 ));
     }
 
@@ -137,9 +140,10 @@ public class QuestionApiTest {
                 1L,
                 "질문제목",
                 "질문답변",
-                null
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
         );
-        String content = gson.toJson(questionDto);
+        //String content = gson.toJson(questionDto);
+        String content = objectMapper.writeValueAsString(questionDto);
         given(questionService.save(Mockito.any(QuestionDto.class), Mockito.anyLong())).willReturn(questionDto);
 
         // when
@@ -162,13 +166,18 @@ public class QuestionApiTest {
                         getResponsePreProcessor(),
                         requestFields(
                                 List.of(
+                                        fieldWithPath("id").ignored(),
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("질문 제목"),
-                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용")
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용"),
+                                        fieldWithPath("createdAt").ignored()
                                 )
                         ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("질문 아이디"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 제목"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간")
                                 )
                         )
                 ));
@@ -203,7 +212,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/" + questionId)
+                        get("/question/{question-id}", questionId)
                 );
 
         // then
@@ -223,7 +232,15 @@ public class QuestionApiTest {
                         ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("질문 아이디"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 제목"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("질문 생성 시간"),
+                                        fieldWithPath("answers").description("답변 리스트"),
+                                        fieldWithPath("answers[].id").type(JsonFieldType.NUMBER).description("답변 아이디"),
+                                        fieldWithPath("answers[].body").type(JsonFieldType.STRING).description("답변 내용"),
+                                        fieldWithPath("answers[].createdAt").type(JsonFieldType.STRING).description("답변 생성 시간"),
+                                        fieldWithPath("answers[].modifiedAt").type(JsonFieldType.STRING).description("답변 수정 시간")
                                 )
                         )
                 ));
@@ -238,7 +255,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/" + questionId +  "/edit")
+                        get("/question/{question-id}/edit", questionId)
                 );
 
         // then
@@ -249,11 +266,6 @@ public class QuestionApiTest {
                         getResponsePreProcessor(),
                         pathParameters(
                                 parameterWithName("question-id").description("질문 아이디")
-                        ),
-                        responseFields(
-                                List.of(
-                                        fieldWithPath().type().description(),
-                                )
                         )
                 ));
     }
@@ -267,16 +279,17 @@ public class QuestionApiTest {
                 1L,
                 "질문제목",
                 "질문답변",
-                null
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
         );
         questionDto.setQuestionId(questionId);
-        String content = gson.toJson(questionDto);
+        //String content = gson.toJson(questionDto);
+        String content = objectMapper.writeValueAsString(questionDto);
         given(questionService.updateQuestion(Mockito.any(QuestionDto.class))).willReturn(questionDto);
 
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        patch("/question/" + questionId + "/edit")
+                        patch("/question/{question-id}/edit", questionId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -296,13 +309,18 @@ public class QuestionApiTest {
                         ),
                         requestFields(
                                 List.of(
-                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 제목"),
-                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 내용")
+                                        fieldWithPath("id").ignored(),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 수정한 제목"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 수정한 내용"),
+                                        fieldWithPath("createdAt").ignored()
                                 )
                         ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("질문 아이디"),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("질문 수정한 제목"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 수정한 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간")
                                 )
                         )
                 ));
@@ -319,7 +337,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        delete("/question/" + questionId)
+                        delete("/question/{question-id}", questionId)
                 );
 
         // then
@@ -330,11 +348,6 @@ public class QuestionApiTest {
                         getResponsePreProcessor(),
                         pathParameters(
                                 parameterWithName("question-id").description("질문 아이디")
-                        ),
-                        responseFields(
-                                List.of(
-                                        fieldWithPath().type().description(),
-                                )
                         )
                 ));
     }

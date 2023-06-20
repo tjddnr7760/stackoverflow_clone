@@ -32,12 +32,13 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(AnswerController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -56,7 +57,10 @@ public class AnswerApiTest {
     @Autowired
     private Gson gson;
 
-    @DisplayName("답변 아이디 조회")
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @DisplayName("아이디로 답변 조회")
     @Test
     public void searchAnswerTest() throws Exception {
         // given
@@ -72,7 +76,7 @@ public class AnswerApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/answer/" + answerId)
+                        get("/answer/{answer-id}", answerId)
                 );
 
         // then
@@ -88,7 +92,10 @@ public class AnswerApiTest {
                         ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("답변 아이디"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
+                                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
                                 )
                         )
                 ));
@@ -102,15 +109,17 @@ public class AnswerApiTest {
         AnswerDto answerDto = new AnswerDto(
                 1L,
                 "답변내용",
-                null, null
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7),
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
         );
-        String content = gson.toJson(answerDto);
+        //String content = gson.toJson(answerDto);
+        String content = objectMapper.writeValueAsString(answerDto);
         given(answerService.save(Mockito.any(AnswerDto.class), Mockito.anyLong())).willReturn(answerDto);
 
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        post("/answer/" + questionId)
+                        post("/answer/{question-id}", questionId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -119,6 +128,7 @@ public class AnswerApiTest {
         // then
         actions
                 .andExpect(status().isCreated())
+                .andExpect(content().json(content))
                 .andExpect(jsonPath("$.id").value(answerDto.getId()))
                 .andExpect(jsonPath("$.body").value(answerDto.getBody()))
                 .andDo(document("post-saveAnswer-byQuestionId",
@@ -129,12 +139,18 @@ public class AnswerApiTest {
                         ),
                         requestFields(
                                 List.of(
-                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 내용")
+                                        fieldWithPath("id").ignored(),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 내용"),
+                                        fieldWithPath("createdAt").ignored(),
+                                        fieldWithPath("modifiedAt").ignored()
                                 )
                         ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("답변 아이디"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
+                                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
                                 )
                         )
                 ));
@@ -150,7 +166,7 @@ public class AnswerApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/answer/" + answerId + "/edit")
+                        get("/answer/{answer-id}/edit", answerId)
                 );
 
         // then
@@ -161,11 +177,6 @@ public class AnswerApiTest {
                         getResponsePreProcessor(),
                         pathParameters(
                                 parameterWithName("answer-id").description("답변 아이디")
-                        ),
-                        responseFields(
-                                List.of(
-                                        fieldWithPath().type().description(),
-                                )
                         )
                 ));
     }
@@ -178,15 +189,17 @@ public class AnswerApiTest {
         AnswerDto answerDto = new AnswerDto(
                 1L,
                 "답변내용",
-                null, null
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7),
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
         );
-        String content = gson.toJson(answerDto);
+        //String content = gson.toJson(answerDto);
+        String content = objectMapper.writeValueAsString(answerDto);
         given(answerService.updateAnswer(Mockito.anyLong(), Mockito.any(AnswerDto.class))).willReturn(answerDto);
 
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        patch("/answer/" + answerId + "/edit")
+                        patch("/answer/{answer-id}/edit", answerId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -205,12 +218,18 @@ public class AnswerApiTest {
                         ),
                         requestFields(
                                 List.of(
-                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 수정 내용")
+                                        fieldWithPath("id").ignored(),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 수정 내용"),
+                                        fieldWithPath("createdAt").ignored(),
+                                        fieldWithPath("modifiedAt").ignored()
                                 )
                         ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath().type().description(),
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("답변 아이디"),
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 내용"),
+                                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
+                                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
                                 )
                         )
                 ));
@@ -227,7 +246,7 @@ public class AnswerApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        delete("/answer/" + answerId)
+                        delete("/answer/{answer-id}", answerId)
                 );
 
         // then
@@ -238,11 +257,6 @@ public class AnswerApiTest {
                         getResponsePreProcessor(),
                         pathParameters(
                                 parameterWithName("answer-id").description("답변 아이디")
-                        ),
-                        responseFields(
-                                List.of(
-                                        fieldWithPath().type().description(),
-                                )
                         )
                 ));
     }
