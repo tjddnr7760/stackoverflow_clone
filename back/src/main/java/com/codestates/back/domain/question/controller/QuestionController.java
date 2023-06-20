@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @CrossOrigin
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/questions")
 public class QuestionController {
 
     private final QuestionService questionService;

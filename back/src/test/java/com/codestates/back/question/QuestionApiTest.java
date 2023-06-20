@@ -86,7 +86,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question")
+                        get("/questions")
                 );
 
         // then
@@ -120,7 +120,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/ask")
+                        get("/questions/ask")
                 );
 
         // then
@@ -149,7 +149,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        post("/question/ask")
+                        post("/questions/ask")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -212,7 +212,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/{question-id}", questionId)
+                        get("/questions/{question-id}", questionId)
                 );
 
         // then
@@ -255,7 +255,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/{question-id}/edit", questionId)
+                        get("/questions/{question-id}/edit", questionId)
                 );
 
         // then
@@ -289,7 +289,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        patch("/question/{question-id}/edit", questionId)
+                        patch("/questions/{question-id}/edit", questionId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -337,7 +337,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        delete("/question/{question-id}", questionId)
+                        delete("/questions/{question-id}", questionId)
                 );
 
         // then
