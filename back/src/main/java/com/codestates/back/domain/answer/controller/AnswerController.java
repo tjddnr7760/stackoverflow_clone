@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// 답변을 반납할때 질문정보와, 유저정보를 함께 반환한느게 맞지 않는가?
+
 @RestController
 @RequestMapping("/answer")
 public class AnswerController {
@@ -26,7 +28,7 @@ public class AnswerController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("{question-id}")
+    @PostMapping("/{question-id}")
     public AnswerDto createAnswer(@RequestBody AnswerDto answerDto,
                                   @PathVariable("question-id") long questionId) {
         // 답변 저장

@@ -86,7 +86,7 @@ public class UserApiTest {
         // then
         actions
                 .andExpect(status().isSeeOther())
-                .andDo(document("회원가입",
+                .andDo(document("user-signup",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
                         requestFields(
@@ -134,7 +134,7 @@ public class UserApiTest {
         // then
         actions
                 .andExpect(status().isOk())
-                .andDo(document("회원정보수정(비밀번호, Display Name)",
+                .andDo(document("edit-user",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
                         pathParameters(

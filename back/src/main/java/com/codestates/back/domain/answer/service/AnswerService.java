@@ -6,6 +6,8 @@ import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.answer.mapper.AnswerMapper;
 import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.domain.question.infrastructure.QuestionRepository;
+import com.codestates.back.global.exception.BusinessLogicException;
+import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,8 @@ public class AnswerService {
     public AnswerDto save(AnswerDto answerDto, long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         Question question = optionalQuestion.orElseThrow(() ->
-                new RuntimeException());
+                // 질문아이디로 질문 db에서 못찾을시
+                new BusinessLogicException(ExceptionCode.USER_NOT_FOUND));
 
         Answer answer = answerMapper.answerDtoToAnswer(answerDto);
         answer.setQuestion(question);
@@ -43,7 +46,8 @@ public class AnswerService {
     public AnswerDto findAnswer(long answerId) {
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         Answer answer = optionalAnswer.orElseThrow(() ->
-                new RuntimeException());
+                // 답변 db에서 조회 못찾을시
+                new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND));
 
         return answerMapper.answerToAnswerDto(answer);
     };
@@ -51,7 +55,8 @@ public class AnswerService {
     public AnswerDto updateAnswer(long answerId, AnswerDto answerDto) {
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         Answer answer = optionalAnswer.orElseThrow(() ->
-                new RuntimeException());
+                // 답변 db에서 조회 못찾을시
+                new BusinessLogicException(ExceptionCode.ANSWER_NOT_FOUND));
         Answer update = answer.update(answerDto);
         Answer save = answerRepository.save(update);
 
