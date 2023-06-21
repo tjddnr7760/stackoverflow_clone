@@ -5,23 +5,26 @@ import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.mapper.UserMapper;
 import com.codestates.back.domain.user.service.UserService;
+import com.codestates.back.global.auth.jwt.JwtTokenizer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import com.google.gson.Gson;
 import org.springframework.test.web.servlet.ResultActions;
 
-
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.codestates.back.util.ApiDocumentUtils.getRequestPreProcessor;
 import static com.codestates.back.util.ApiDocumentUtils.getResponsePreProcessor;
@@ -31,9 +34,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -43,11 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import static org.mockito.BDDMockito.given;
-
 @WebMvcTest(UserController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
+@AutoConfigureMockMvc(addFilters = false)
 public class UserApiTest {
     @Autowired
     private MockMvc mockMvc;
@@ -57,6 +57,13 @@ public class UserApiTest {
     private UserMapper mapper;
     @Autowired
     private Gson gson;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private AuthenticationManager authenticationManager;
+    @MockBean
+    private JwtTokenizer jwtTokenizer;
+
 
     @DisplayName("회원가입 시 정상적으로 유저 정보가 저장되는지 테스트")
     @Test
@@ -85,7 +92,7 @@ public class UserApiTest {
 
         // then
         actions
-                .andExpect(status().isSeeOther())
+                .andExpect(status().isCreated())
                 .andDo(document("회원가입",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
@@ -158,4 +165,6 @@ public class UserApiTest {
                         )
                         ));
     }
+
+
 }

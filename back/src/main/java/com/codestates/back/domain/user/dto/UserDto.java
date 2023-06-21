@@ -1,9 +1,6 @@
 package com.codestates.back.domain.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-
+import lombok.*;
 
 
 import javax.validation.constraints.Email;
@@ -48,11 +45,13 @@ public class UserDto {
 
     @AllArgsConstructor
     @Getter
+    @Builder
     public static class Response {
         private long userId;
         private String email;
-        private String displayName;
         private String password;
+        private String displayName;
+
     }
 
 
@@ -64,5 +63,21 @@ public class UserDto {
         private Long totalAnswers;
     }
 
+    @Getter
+    @Setter
+    public static class LoginResponse {
+        private String accessToken;
+        private String refreshToken;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class UserProfileResponse {
+        private UserDto.Response userProfile;
+        private UserDto.MyPage myPage;
+    }
 
 }
