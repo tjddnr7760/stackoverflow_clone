@@ -7,7 +7,11 @@ import java.util.List;
 
 public interface QuestionService {
 
-    List<QuestionDto> findAllQuestions();
+    List<QuestionDto> findQuestions(int page);
+
+    long countAllQuestions();
+
+    QuestionDto findQuestion(long questionId);
 
     QuestionDto save(QuestionDto postQuestionDto, long userId);
 

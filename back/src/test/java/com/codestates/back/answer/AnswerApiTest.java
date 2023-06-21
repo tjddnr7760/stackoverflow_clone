@@ -2,6 +2,7 @@ package com.codestates.back.answer;
 
 import com.codestates.back.domain.answer.controller.AnswerController;
 import com.codestates.back.domain.answer.dto.AnswerDto;
+import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.answer.mapper.AnswerMapper;
 import com.codestates.back.domain.answer.service.AnswerService;
 import com.google.gson.Gson;
@@ -156,12 +157,19 @@ public class AnswerApiTest {
                 ));
     }
 
-    @DisplayName("답변 페이지 이동")
+    @DisplayName("답변 수정 페이지 이동")
     @Test
     public void directAnswerPageTest() throws Exception {
         // given
         long answerId = 1L;
         ResponseEntity response = new ResponseEntity<>(HttpStatus.OK);
+        AnswerDto answerDto = new AnswerDto(
+                1L,
+                "답변했던 내용",
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7),
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
+        );
+        given(answerService.findAnswer(Mockito.anyLong())).willReturn(answerDto);
 
         // when
         ResultActions actions =
@@ -172,11 +180,17 @@ public class AnswerApiTest {
         // then
         actions
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.body").value(answerDto.getBody()))
                 .andDo(document("get-answerPage-byAnswerId",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
                         pathParameters(
                                 parameterWithName("answer-id").description("답변 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("답변 했던 내용")
+                                )
                         )
                 ));
     }
