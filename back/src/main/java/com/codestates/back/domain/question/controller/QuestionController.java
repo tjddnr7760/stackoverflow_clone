@@ -24,11 +24,13 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public ResponseEntity directQuestionsPage() {
+    public List<QuestionDto> directQuestionsPage() {
         // 질문 전체 목록 다 긁어와서 보내주기(페이징 기능)
         List<QuestionDto> questionsDtoList = questionService.findAllQuestions();
-        return new ResponseEntity(questionsDtoList, HttpStatus.OK);
+
+        return questionsDtoList;
     }
 
     @GetMapping("/ask")
@@ -37,21 +39,26 @@ public class QuestionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/ask")
-    public ResponseEntity askQuestion(@RequestBody QuestionDto postQuestionDto) {
+    public QuestionDto askQuestion(@RequestBody QuestionDto postQuestionDto) {
         // 질문 제목, 내용 정보들 저장
         //임의로 유저 id 저장, 나중에 스프링 시큐리티로 유저아이디 가져와야함
         Long userId = 1L;
+
         log.info("질문 내용 저장 = {}", postQuestionDto);
         QuestionDto resQuestionDto = questionService.save(postQuestionDto, userId);
-        return new ResponseEntity(resQuestionDto, HttpStatus.CREATED);
+
+        return resQuestionDto;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{questionId}")
-    public ResponseEntity directSpecificQuestionPage(@PathVariable("questionId") long questionId) {
+    public QuestionAnswersDto directSpecificQuestionPage(@PathVariable("questionId") long questionId) {
         // 특정 질문 페이지 이동
         QuestionAnswersDto questionAnswersDto = questionService.findQuestionAnswers(questionId);
-        return new ResponseEntity(questionAnswersDto, HttpStatus.OK);
+
+        return questionAnswersDto;
     }
 
     @GetMapping("/{questionId}/edit")
@@ -60,14 +67,15 @@ public class QuestionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{questionId}/edit")
-    public ResponseEntity editButtonQuestion(@PathVariable("questionId") long questionId,
+    public QuestionDto editButtonQuestion(@PathVariable("questionId") long questionId,
                                              @RequestBody QuestionDto questionDto) {
         // 수정 버튼 누를시
         questionDto.setQuestionId(questionId);
         QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
 
-        return new ResponseEntity(resQuestionDto, HttpStatus.OK);
+        return resQuestionDto;
     }
 
     @DeleteMapping("/{questionId}")

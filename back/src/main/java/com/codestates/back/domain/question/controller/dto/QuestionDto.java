@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class QuestionDto {
-    private Long questionId;
+    private Long id;
     private String title;
     private String body;
     private LocalDateTime createdAt;
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
+    public void setQuestionId(Long id) {
+        this.id = id;
     }
 }

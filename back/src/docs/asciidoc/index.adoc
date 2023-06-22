@@ -1,0 +1,226 @@
+= 스택 오버플로우 클론
+:sectnums:
+:toc: left
+:toclevels: 4
+:toc-title: Table of Contents
+:source-highlighter: prettify
+
+32th, 사다리로만든 팀
+
+v1.0.0,  2023.06.20
+
+***
+== UserController
+=== 회원가입
+include::{snippets}/user-signup/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/user-signup/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/user-signup/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/user-signup/httpie-request.adoc[]
+.request-body.adoc
+include::{snippets}/user-signup/request-body.adoc[]
+.request-fields.adoc
+include::{snippets}/user-signup/request-fields.adoc[]
+
+=== 회원정보 수정
+include::{snippets}/edit-user/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/edit-user/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/edit-user/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/edit-user/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/edit-user/path-parameters.adoc[]
+.request-body.adoc
+include::{snippets}/edit-user/request-body.adoc[]
+.request-fields.adoc
+include::{snippets}/edit-user/request-fields.adoc[]
+.response-body.adoc
+include::{snippets}/edit-user/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/edit-user/response-fields.adoc[]
+
+***
+== QuestionController
+
+=== 질문 전체 목록 조회
+.curl-request.adoc
+include::{snippets}/get-allQuestions/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/get-allQuestions/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/get-allQuestions/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/get-allQuestions/httpie-request.adoc[]
+.request-fields.adoc
+include::{snippets}/get-allQuestions/request-fields.adoc[]
+.response-fields.adoc
+include::{snippets}/get-allQuestions/response-fields.adoc[]
+
+=== 질문 등록 페이지 이동
+.curl-request.adoc
+include::{snippets}/get-askQuestionPage/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/get-askQuestionPage/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/get-askQuestionPage/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/get-askQuestionPage/httpie-request.adoc[]
+.request-fields.adoc
+include::{snippets}/get-askQuestionPage/request-fields.adoc[]
+
+=== 질문 저장
+.curl-request.adoc
+include::{snippets}/post-askQuestion/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/post-askQuestion/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/post-askQuestion/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/post-askQuestion/httpie-request.adoc[]
+.request-body.adoc
+include::{snippets}/post-askQuestion/request-body.adoc[]
+.request-fields.adoc
+include::{snippets}/post-askQuestion/request-fields.adoc[]
+.response-body.adoc
+include::{snippets}/post-askQuestion/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/post-askQuestion/response-fields.adoc[]
+
+=== 특정 질문페이지 이동
+.curl-request.adoc
+include::{snippets}/get-question-byQuestionId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/get-question-byQuestionId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/get-question-byQuestionId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/get-question-byQuestionId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/get-question-byQuestionId/path-parameters.adoc[]
+.response-body.adoc
+include::{snippets}/get-question-byQuestionId/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/get-question-byQuestionId/response-fields.adoc[]
+
+=== 질문 수정 페이지 이동
+include::{snippets}/get-questionUpdatePage-byQuestionId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/get-questionUpdatePage-byQuestionId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/get-questionUpdatePage-byQuestionId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/get-questionUpdatePage-byQuestionId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/get-questionUpdatePage-byQuestionId/path-parameters.adoc[]
+
+=== 질문 수정
+include::{snippets}/patch-question-byQuestionId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/patch-question-byQuestionId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/patch-question-byQuestionId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/patch-question-byQuestionId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/patch-question-byQuestionId/path-parameters.adoc[]
+.request-body.adoc
+include::{snippets}/patch-question-byQuestionId/request-body.adoc[]
+.request-fields.adoc
+include::{snippets}/patch-question-byQuestionId/request-fields.adoc[]
+.response-body.adoc
+include::{snippets}/patch-question-byQuestionId/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/patch-question-byQuestionId/response-fields.adoc[]
+
+=== 질문 삭제
+include::{snippets}/delete-question-byQuestionId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/delete-question-byQuestionId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/delete-question-byQuestionId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/delete-question-byQuestionId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/delete-question-byQuestionId/path-parameters.adoc[]
+
+***
+== AnswerController
+=== 아이디로 답변 조회
+include::{snippets}/get-answer-byAnswerId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/get-answer-byAnswerId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/get-answer-byAnswerId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/get-answer-byAnswerId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/get-answer-byAnswerId/path-parameters.adoc[]
+.response-body.adoc
+include::{snippets}/get-answer-byAnswerId/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/get-answer-byAnswerId/response-fields.adoc[]
+
+=== 답변 저장
+include::{snippets}/post-saveAnswer-byQuestionId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/path-parameters.adoc[]
+.request-body.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/request-body.adoc[]
+.request-fields.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/request-fields.adoc[]
+.response-body.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/post-saveAnswer-byQuestionId/response-fields.adoc[]
+
+=== 답변 페이지 이동
+include::{snippets}/get-answerPage-byAnswerId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/get-answerPage-byAnswerId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/get-answerPage-byAnswerId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/get-answerPage-byAnswerId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/get-answerPage-byAnswerId/path-parameters.adoc[]
+
+=== 답변 수정
+include::{snippets}/patch-answer-byAnswerId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/patch-answer-byAnswerId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/patch-answer-byAnswerId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/patch-answer-byAnswerId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/patch-answer-byAnswerId/path-parameters.adoc[]
+.request-body.adoc
+include::{snippets}/patch-answer-byAnswerId/request-body.adoc[]
+.request-fields.adoc
+include::{snippets}/patch-answer-byAnswerId/request-fields.adoc[]
+.response-body.adoc
+include::{snippets}/patch-answer-byAnswerId/response-body.adoc[]
+.response-fields.adoc
+include::{snippets}/patch-answer-byAnswerId/response-fields.adoc[]
+
+
+=== 답변 삭제
+include::{snippets}/delete-answer-byAnswerId/curl-request.adoc[]
+.http-request.adoc
+include::{snippets}/delete-answer-byAnswerId/http-request.adoc[]
+.http-response.adoc
+include::{snippets}/delete-answer-byAnswerId/http-response.adoc[]
+.httpie-request.adoc
+include::{snippets}/delete-answer-byAnswerId/httpie-request.adoc[]
+.path-parameters.adoc
+include::{snippets}/delete-answer-byAnswerId/path-parameters.adoc[]

@@ -4,7 +4,7 @@ import com.codestates.back.domain.answer.dto.AnswerDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -13,7 +13,7 @@ public class QuestionAnswersDto {
     private Long id;
     private String title;
     private String body;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     List<AnswerDto> answers;
 
     public void setAnswers(List<AnswerDto> answers) {
