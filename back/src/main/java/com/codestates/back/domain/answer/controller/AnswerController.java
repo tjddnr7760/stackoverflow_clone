@@ -3,6 +3,10 @@ package com.codestates.back.domain.answer.controller;
 import com.codestates.back.domain.answer.dto.AnswerDto;
 import com.codestates.back.domain.answer.dto.EditDto;
 import com.codestates.back.domain.answer.service.AnswerService;
+import com.codestates.back.domain.question.controller.dto.QuestionDto;
+import com.codestates.back.domain.user.entity.User;
+import com.codestates.back.domain.user.service.UserService;
+import com.codestates.back.global.exception.response.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +20,12 @@ import org.springframework.web.bind.annotation.*;
 public class AnswerController {
 
     private final AnswerService answerService;
+    private final UserService userService;
 
     @Autowired
-    public AnswerController(AnswerService answerService) {
+    public AnswerController(AnswerService answerService, UserService userService) {
         this.answerService = answerService;
+        this.userService = userService;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -35,7 +41,10 @@ public class AnswerController {
                                   @PathVariable("question-id") long questionId,
                                   Authentication authentication) {
         // 답변 저장
-        return answerService.save(answerDto, questionId);
+        String email = authentication.getName();
+        User userByEmail = userService.findUserByEmail(email);
+
+        return answerService.save(userByEmail, answerDto, questionId);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -50,18 +59,32 @@ public class AnswerController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{answer-id}/edit")
-    public AnswerDto editAnswer(@RequestBody AnswerDto answerDto,
+    public Object editAnswer(@RequestBody AnswerDto answerDto,
                                 @PathVariable("answer-id") long answerId,
                                 Authentication authentication) {
         // 답변 수정
-        return answerService.updateAnswer(answerId, answerDto);
+        String email = authentication.getName();
+        User userByEmail = userService.findUserByEmail(email);
+        if (userByEmail.getAnswers().contains(answerService.findAnswer(answerId))) {
+            AnswerDto answerDto1 = answerService.updateAnswer(answerId, answerDto);
+
+            return answerDto1;
+        } else {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
+        }
     }
 
     @DeleteMapping("/{answer-id}")
-    public ResponseEntity deleteAnswer(@PathVariable("answer-id") long answerId,
+    public Object deleteAnswer(@PathVariable("answer-id") long answerId,
                                        Authentication authentication) {
         // 답변 삭제
-        answerService.deleteAnswerById(answerId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        String email = authentication.getName();
+        User userByEmail = userService.findUserByEmail(email);
+        if (userByEmail.getAnswers().contains(answerService.findAnswer(answerId))) {
+            answerService.deleteAnswerById(answerId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
+        }
     }
 }

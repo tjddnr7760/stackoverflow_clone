@@ -5,13 +5,18 @@ import com.codestates.back.domain.question.application.QuestionService;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import com.codestates.back.domain.question.controller.dto.QuestionsPageDto;
+import com.codestates.back.domain.user.entity.User;
+import com.codestates.back.domain.user.service.UserService;
+import com.codestates.back.global.exception.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -21,10 +26,12 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final UserService userService;
 
     @Autowired
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(QuestionService questionService, UserService userService) {
         this.questionService = questionService;
+        this.userService = userService;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -38,13 +45,25 @@ public class QuestionController {
     }
 
     @GetMapping("/ask")
-    public ResponseEntity directAskQuestionPage() {
+    public ResponseEntity directAskQuestionPage(Authentication authentication) {
         // 질문 등록 페이지로 이동, 넘겨줄 데이터 없음
         // 토큰 있으면 바로 글쓰기 페이지로
+        if (authentication.getName() != null) {
+            return new ResponseEntity(HttpStatus.OK);
+        }
 
         // 토큰 없으면 로그인 페이지로 리다이렉트
+        if (authentication.getName() == null) {
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .path("/users/login")
+                    .build()
+                    .toUri();
 
-        return new ResponseEntity(HttpStatus.OK);
+            return ResponseEntity.created(location).body(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -53,7 +72,9 @@ public class QuestionController {
                                    Authentication authentication) {
         // 질문 제목, 내용 정보들 저장
         //임의로 유저 id 저장, 나중에 스프링 시큐리티로 유저아이디 가져와야함
-        Long userId = 1L;
+        String email = authentication.getName();
+        User userByEmail = userService.findUserByEmail(email);
+        Long userId = userByEmail.getUserId();
 
         log.info("질문 내용 저장 = {}", postQuestionDto);
         QuestionDto resQuestionDto = questionService.save(postQuestionDto, userId);
@@ -82,21 +103,32 @@ public class QuestionController {
 
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{questionId}/edit")
-    public QuestionDto editButtonQuestion(@PathVariable("questionId") long questionId,
+    public Object editButtonQuestion(@PathVariable("questionId") long questionId,
                                           @RequestBody QuestionDto questionDto,
                                           Authentication authentication) {
-        // 수정 버튼 누를시
-        questionDto.setQuestionId(questionId);
-        QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
+        String email = authentication.getName();
+        User userByEmail = userService.findUserByEmail(email);
+        if (userByEmail.getQuestions().contains(questionService.findQuestion(questionId))) {
+            questionDto.setQuestionId(questionId);
+            QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
 
-        return resQuestionDto;
+            return resQuestionDto;
+        } else {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 질문이 아닙니다.");
+        }
     }
 
     @DeleteMapping("/{questionId}")
-    public ResponseEntity deleteButtonQuestion(@PathVariable("questionId") long questionId,
+    public Object deleteButtonQuestion(@PathVariable("questionId") long questionId,
                                                Authentication authentication) {
-        // 삭제 버튼 누를시
-        questionService.deleteById(questionId);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        String email = authentication.getName();
+        User userByEmail = userService.findUserByEmail(email);
+        if (userByEmail.getQuestions().contains(questionService.findQuestion(questionId))) {
+            questionService.deleteById(questionId);
+
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } else {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 질문이 아닙니다.");
+        }
     }
 }

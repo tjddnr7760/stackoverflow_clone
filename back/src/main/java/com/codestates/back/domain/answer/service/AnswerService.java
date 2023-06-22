@@ -6,6 +6,7 @@ import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.answer.mapper.AnswerMapper;
 import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.domain.question.infrastructure.QuestionRepository;
+import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.global.exception.BusinessLogicException;
 import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AnswerService {
         this.answerMapper = answerMapper;
     }
 
-    public AnswerDto save(AnswerDto answerDto, long questionId) {
+    public AnswerDto save(User user, AnswerDto answerDto, long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         Question question = optionalQuestion.orElseThrow(() ->
                 // 질문아이디로 질문 db에서 못찾을시
