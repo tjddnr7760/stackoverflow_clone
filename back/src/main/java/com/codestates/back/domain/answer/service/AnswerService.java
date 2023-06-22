@@ -2,6 +2,7 @@ package com.codestates.back.domain.answer.service;
 
 import com.codestates.back.domain.answer.AnswerRepository.AnswerRepository;
 import com.codestates.back.domain.answer.dto.AnswerDto;
+import com.codestates.back.domain.answer.dto.EditAnswerDto;
 import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.answer.mapper.AnswerMapper;
 import com.codestates.back.domain.question.domain.Question;
@@ -55,7 +56,7 @@ public class AnswerService {
         return answerMapper.answerToAnswerDto(answer);
     };
 
-    public AnswerDto updateAnswer(long answerId, AnswerDto answerDto) {
+    public EditAnswerDto updateAnswer(long answerId, AnswerDto answerDto) {
         Optional<Answer> optionalAnswer = answerRepository.findById(answerId);
         Answer answer = optionalAnswer.orElseThrow(() ->
                 // 답변 db에서 조회 못찾을시
@@ -63,7 +64,7 @@ public class AnswerService {
         Answer update = answer.update(answerDto);
         Answer save = answerRepository.save(update);
 
-        return answerMapper.answerToAnswerDto(save);
+        return answerMapper.answerToEditAnswerDto(save);
     };
 
     public void deleteAnswerById(long answerId) {

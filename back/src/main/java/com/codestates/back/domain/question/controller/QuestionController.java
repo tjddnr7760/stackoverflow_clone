@@ -35,6 +35,7 @@ public class QuestionController {
         this.userService = userService;
     }
 
+    // 유저 정보 넘어와야함
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/page/{page-number}")
     public QuestionsPageDto directQuestionsPage(@PathVariable("page-number") int page) {
@@ -46,11 +47,10 @@ public class QuestionController {
     }
 
     @GetMapping("/ask")
-    public ResponseEntity directAskQuestionPage(HttpRequest httpRequest) {
+    public ResponseEntity directAskQuestionPage(Authentication authentication) {
         // 질문 등록 페이지로 이동, 넘겨줄 데이터 없음
         // 토큰 있으면 바로 글쓰기 페이지로
-        String authorization = httpRequest.getHeaders().getFirst("Authorization");
-        if (authorization != null && authorization.startsWith("Bearer")) {
+        if (authentication.getName() != null) {
             return new ResponseEntity(HttpStatus.OK);
         } else {
             URI location = ServletUriComponentsBuilder
@@ -63,6 +63,7 @@ public class QuestionController {
         }
     }
 
+    // 유저 정보 넘어와야함
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/ask")
     public QuestionDto askQuestion(@RequestBody QuestionDto postQuestionDto,
@@ -79,8 +80,9 @@ public class QuestionController {
         return resQuestionDto;
     }
 
+    // 유저 정보 넘어와야함
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{questionId}")
+    @GetMapping("/specific/{questionId}")
     public QuestionAnswersDto directSpecificQuestionPage(@PathVariable("questionId") long questionId) {
         // 특정 질문 페이지 이동
         QuestionAnswersDto questionAnswersDto = questionService.findQuestionAnswers(questionId);
@@ -90,12 +92,17 @@ public class QuestionController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{questionId}/edit")
-    public EditDto directQuestionEditPage(@PathVariable("questionId") long questionId) {
-        QuestionDto questionDto = questionService.findQuestion(questionId);
-        EditDto editDto = new EditDto(questionDto.getBody());
+    public Object directQuestionEditPage(@PathVariable("questionId") long questionId,
+                                         Authentication authentication) {
+        if (authentication.getName() != null) {
+            QuestionDto questionDto = questionService.findQuestion(questionId);
+            EditDto editDto = new EditDto(questionDto.getBody());
 
-        // 질문 수정 페이지 이동
-        return editDto;
+            // 질문 수정 페이지 이동
+            return editDto;
+        } else {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "잘못된 요청입니다.");
+        }
     }
 
     @ResponseStatus(HttpStatus.OK)

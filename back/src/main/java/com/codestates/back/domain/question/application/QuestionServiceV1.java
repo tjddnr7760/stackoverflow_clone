@@ -7,7 +7,9 @@ import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import com.codestates.back.domain.question.controller.mapper.QuestionMapper;
 import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.domain.question.infrastructure.QuestionRepository;
+import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
+import com.codestates.back.domain.user.mapper.UserMapper;
 import com.codestates.back.domain.user.repository.UserRepository;
 import com.codestates.back.global.exception.BusinessLogicException;
 import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
@@ -18,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,14 +31,18 @@ public class QuestionServiceV1 implements QuestionService{
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final QuestionMapper questionMapper;
+    private final UserMapper userMapper;
 
     @Autowired
-    public QuestionServiceV1(QuestionRepository questionRepository, UserRepository userRepository, QuestionMapper questionMapper) {
+    public QuestionServiceV1(QuestionRepository questionRepository, UserRepository userRepository,
+                             QuestionMapper questionMapper, UserMapper userMapper) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.questionMapper = questionMapper;
+        this.userMapper = userMapper;
     }
 
+    // 유저정보 넘어와야함
     @Override
     public List<QuestionDto> findQuestions(int page) {
         int pageSize = 15;
@@ -46,7 +51,8 @@ public class QuestionServiceV1 implements QuestionService{
 
         List<QuestionDto> questionDtos = new ArrayList<>();
         for (Question question : result.getContent()) {
-            questionDtos.add(questionMapper.questionToQuestionDto(question));
+            QuestionDto questionDto = questionMapper.questionToQuestionDto(question);
+            questionDtos.add(questionDto);
         }
 
         return questionDtos;
@@ -78,7 +84,9 @@ public class QuestionServiceV1 implements QuestionService{
         question.setUser(user);
         user.getQuestions().add(question);
         question = questionRepository.save(question);
-        return questionMapper.questionToQuestionDto(question);
+        QuestionDto questionDto = questionMapper.questionToQuestionDto(question);
+
+        return questionDto;
     }
 
     @Override

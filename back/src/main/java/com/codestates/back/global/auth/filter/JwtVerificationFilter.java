@@ -23,7 +23,10 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     private final JwtTokenizer jwtTokenizer;
     private final CustomAuthorityUtils authorityUtils;
 
-    private static final String[] whitelist = {"/", "/users/signup", "/users/login", "/logout",
+    private static final String[] whitelist = {"/",
+            "/users/signup", "/users/login", "/logout",
+            "/questions/page/*" , "/questions/specific/*",
+            "/answer/specific/*",
             "/h2/*",};
 
     public JwtVerificationFilter(JwtTokenizer jwtTokenizer,

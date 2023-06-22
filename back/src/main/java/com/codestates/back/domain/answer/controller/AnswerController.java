@@ -1,9 +1,9 @@
 package com.codestates.back.domain.answer.controller;
 
 import com.codestates.back.domain.answer.dto.AnswerDto;
+import com.codestates.back.domain.answer.dto.EditAnswerDto;
 import com.codestates.back.domain.answer.dto.EditDto;
 import com.codestates.back.domain.answer.service.AnswerService;
-import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.exception.response.ErrorResponse;
@@ -12,8 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-// 답변을 반납할때 질문정보와, 유저정보를 함께 반환한느게 맞지 않는가?
+import java.net.URI;
 
 @RestController
 @RequestMapping("/answer")
@@ -28,13 +29,15 @@ public class AnswerController {
         this.userService = userService;
     }
 
+    // 유저 정보 넘어와야함
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{answer-id}")
+    @GetMapping("/specific/{answer-id}")
     public AnswerDto directAnswerPage(@PathVariable("answer-id") long answerId) {
         // 저장된 답변 페이지 아이디로 요청
         return answerService.findAnswer(answerId);
     }
 
+    // 유저 정보 넘어와야함
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{question-id}")
     public AnswerDto createAnswer(@RequestBody AnswerDto answerDto,
@@ -49,12 +52,23 @@ public class AnswerController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{answer-id}/edit")
-        public EditDto directAnswerEditPage(@PathVariable("answer-id") long answerId) {
-        AnswerDto answerDto = answerService.findAnswer(answerId);
-        EditDto editDto = new EditDto(answerDto.getBody());
+        public Object directAnswerEditPage(@PathVariable("answer-id") long answerId,
+                                            Authentication authentication) {
+        if (authentication.getName() != null) {
+            AnswerDto answerDto = answerService.findAnswer(answerId);
+            EditDto editDto = new EditDto(answerDto.getBody());
 
-        // 답변 수정 페이지 이동
-        return editDto;
+            // 답변 수정 페이지 이동
+            return editDto;
+        } else {
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .path("/users/login")
+                    .build()
+                    .toUri();
+
+            return ResponseEntity.created(location).body("로그인을 먼저 진행하세요");
+        }
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -66,9 +80,9 @@ public class AnswerController {
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
         if (userByEmail.getAnswers().contains(answerService.findAnswer(answerId))) {
-            AnswerDto answerDto1 = answerService.updateAnswer(answerId, answerDto);
+            EditAnswerDto editAnswerDto = answerService.updateAnswer(answerId, answerDto);
 
-            return answerDto1;
+            return editAnswerDto;
         } else {
             return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
         }
