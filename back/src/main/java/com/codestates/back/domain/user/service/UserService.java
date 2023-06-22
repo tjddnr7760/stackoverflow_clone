@@ -5,12 +5,15 @@ import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.repository.UserRepository;
+import com.codestates.back.global.auth.userdetails.CustomUserDetails;
+import com.codestates.back.global.auth.userdetails.CustomUserDetailsService;
 import com.codestates.back.global.auth.utils.CustomAuthorityUtils;
 import com.codestates.back.global.exception.BusinessLogicException;
 import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -45,6 +48,10 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
+        if (savedUser == null) {
+            throw new IllegalStateException("Failed to save user during signup.");
+        }
+
         return savedUser;
     }
 
@@ -59,14 +66,20 @@ public class UserService {
 
         // 비밀번호 수정 로직. 만약 존재하는 유저이고 새 비밀번호가 입력됐다면 수정
         Optional.ofNullable(user.getPassword())
-                .ifPresent(password -> findUser.setPassword(password));
+                .ifPresent(password -> findUser.setPassword(passwordEncoder.encode(password)));
 
         return userRepository.save(findUser);
     }
 
-    @Transactional(readOnly = true)
+
     public User findUser(long userId) {
         return findVerifiedUser(userId);
+    }
+
+    // 로그인한 유저의 정보 가져오기.
+    // 현재 토큰을 가지고 있는(로그인한) 유저의 엔티티 (User)를 리턴함.
+    public User getLoginUser() {
+        return getUserByToken();
     }
 
     public Page<User> findUsers(int page) {
@@ -120,4 +133,10 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    public User getUserByToken() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CustomUserDetails principalDetails = (CustomUserDetails) principal;
+
+        return principalDetails.getUser();
+    }
 }

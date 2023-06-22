@@ -26,9 +26,9 @@ public class UserDto {
     }
 
     @Getter
+    @Setter
     @AllArgsConstructor
     public static class Update {
-        private long userId;
 
         @NotBlank
         @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
@@ -38,19 +38,18 @@ public class UserDto {
         @NotBlank
         private String displayName;
 
-        public void setUserId(long userId) {
-            this.userId = userId;
-        }
     }
 
     @AllArgsConstructor
+    @NoArgsConstructor
     @Getter
     @Builder
     public static class Response {
         private long userId;
         private String email;
-        private String password;
+    //    private String password;
         private String displayName;
+        private String message;
 
     }
 
@@ -67,7 +66,10 @@ public class UserDto {
     @Setter
     public static class LoginResponse {
         private String accessToken;
-        private String refreshToken;
+        private Long userId;
+        private String displayName;
+        private String email;
+        private String message;
     }
 
     @Getter
@@ -79,5 +81,6 @@ public class UserDto {
         private UserDto.Response userProfile;
         private UserDto.MyPage myPage;
     }
+
 
 }

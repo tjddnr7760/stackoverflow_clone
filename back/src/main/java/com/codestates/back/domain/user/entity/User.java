@@ -22,7 +22,7 @@ public class User extends TimeTracker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, updatable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private String password;

@@ -33,41 +33,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(findUser);
     }
 
-    private final class CustomUserDetails extends User implements UserDetails {
-        CustomUserDetails(User user) {
-            setUserId(user.getUserId());
-            setEmail(user.getEmail());
-            setPassword(user.getPassword());
-        }
-
-        @Override
-        public Collection<? extends GrantedAuthority> getAuthorities() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public String getUsername() {
-            return getEmail();
-        }
-
-        @Override
-        public boolean isAccountNonExpired() {
-            return true;
-        }
-
-        @Override
-        public boolean isAccountNonLocked() {
-            return true;
-        }
-
-        @Override
-        public boolean isCredentialsNonExpired() {
-            return true;
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return true;
-        }
-    }
 }

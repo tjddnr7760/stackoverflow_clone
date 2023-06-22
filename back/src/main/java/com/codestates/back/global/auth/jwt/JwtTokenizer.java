@@ -6,10 +6,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Calendar;
@@ -18,6 +24,7 @@ import java.util.Map;
 
 @Component
 public class JwtTokenizer {
+
     @Getter
     @Value("${JWT_SECRET_KEY}")
     private String secretKey;
@@ -92,8 +99,13 @@ public class JwtTokenizer {
     private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
         Key key = Keys.hmacShaKeyFor(keyBytes);
-
         return key;
+    }
+
+    // 로그 추적용
+    @PostConstruct
+    public void logSecretKey() {
+        System.out.println("JWT_SECRET_KEY: " + secretKey);
     }
 }
 
