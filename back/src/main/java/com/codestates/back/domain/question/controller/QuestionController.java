@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,12 +40,17 @@ public class QuestionController {
     @GetMapping("/ask")
     public ResponseEntity directAskQuestionPage() {
         // 질문 등록 페이지로 이동, 넘겨줄 데이터 없음
+        // 토큰 있으면 바로 글쓰기 페이지로
+
+        // 토큰 없으면 로그인 페이지로 리다이렉트
+
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/ask")
-    public QuestionDto askQuestion(@RequestBody QuestionDto postQuestionDto) {
+    public QuestionDto askQuestion(@RequestBody QuestionDto postQuestionDto,
+                                   Authentication authentication) {
         // 질문 제목, 내용 정보들 저장
         //임의로 유저 id 저장, 나중에 스프링 시큐리티로 유저아이디 가져와야함
         Long userId = 1L;
@@ -77,7 +83,8 @@ public class QuestionController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{questionId}/edit")
     public QuestionDto editButtonQuestion(@PathVariable("questionId") long questionId,
-                                             @RequestBody QuestionDto questionDto) {
+                                          @RequestBody QuestionDto questionDto,
+                                          Authentication authentication) {
         // 수정 버튼 누를시
         questionDto.setQuestionId(questionId);
         QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
@@ -86,7 +93,8 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{questionId}")
-    public ResponseEntity deleteButtonQuestion(@PathVariable("questionId") long questionId) {
+    public ResponseEntity deleteButtonQuestion(@PathVariable("questionId") long questionId,
+                                               Authentication authentication) {
         // 삭제 버튼 누를시
         questionService.deleteById(questionId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);

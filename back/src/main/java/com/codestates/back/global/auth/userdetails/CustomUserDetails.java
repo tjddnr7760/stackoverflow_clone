@@ -7,17 +7,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+
 @Getter
-public class CustomUserDetails implements UserDetails {
-    private final User user;
+public class CustomUserDetails extends User implements UserDetails {
 
     public CustomUserDetails(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public String getPassword() {
-        return user.getPassword();
+        setUserId((user.getUserId()));
+        setEmail(user.getEmail());
+        setPassword(user.getPassword());
+        setDisplayName(getUsername());
     }
 
     @Override
@@ -27,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return getEmail();
     }
 
     @Override
@@ -48,6 +46,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User getUser() {
+        return getUser();
     }
 }
 

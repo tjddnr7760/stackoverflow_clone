@@ -6,7 +6,6 @@ import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.repository.UserRepository;
 import com.codestates.back.global.auth.userdetails.CustomUserDetails;
-import com.codestates.back.global.auth.userdetails.CustomUserDetailsService;
 import com.codestates.back.global.auth.utils.CustomAuthorityUtils;
 import com.codestates.back.global.exception.BusinessLogicException;
 import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
@@ -43,7 +42,6 @@ public class UserService {
         // 비밀번호 암호화 추가
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
-
         //
 
         User savedUser = userRepository.save(user);
