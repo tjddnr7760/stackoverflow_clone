@@ -5,6 +5,7 @@ import com.codestates.back.domain.answer.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 // 답변을 반납할때 질문정보와, 유저정보를 함께 반환한느게 맞지 않는가?
@@ -30,7 +31,8 @@ public class AnswerController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{question-id}")
     public AnswerDto createAnswer(@RequestBody AnswerDto answerDto,
-                                  @PathVariable("question-id") long questionId) {
+                                  @PathVariable("question-id") long questionId,
+                                  Authentication authentication) {
         // 답변 저장
         return answerService.save(answerDto, questionId);
     }
@@ -44,13 +46,15 @@ public class AnswerController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{answer-id}/edit")
     public AnswerDto editAnswer(@RequestBody AnswerDto answerDto,
-                                @PathVariable("answer-id") long answerId) {
+                                @PathVariable("answer-id") long answerId,
+                                Authentication authentication) {
         // 답변 수정
         return answerService.updateAnswer(answerId, answerDto);
     }
 
     @DeleteMapping("/{answer-id}")
-    public ResponseEntity deleteAnswer(@PathVariable("answer-id") long answerId) {
+    public ResponseEntity deleteAnswer(@PathVariable("answer-id") long answerId,
+                                       Authentication authentication) {
         // 답변 삭제
         answerService.deleteAnswerById(answerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
