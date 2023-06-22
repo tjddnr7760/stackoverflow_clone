@@ -1,5 +1,7 @@
 package com.codestates.back.global.auth.config;
 
+import com.codestates.back.domain.user.repository.UserRepository;
+import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.auth.filter.JwtAuthenticationFilter;
 import com.codestates.back.global.auth.filter.JwtVerificationFilter;
 import com.codestates.back.global.auth.handler.UserAccessDeniedHandler;
@@ -8,6 +10,7 @@ import com.codestates.back.global.auth.handler.UserAuthenticationFailureHandler;
 import com.codestates.back.global.auth.handler.UserAuthenticationSuccessHandler;
 import com.codestates.back.global.auth.jwt.JwtTokenizer;
 import com.codestates.back.global.auth.utils.CustomAuthorityUtils;
+import org.springframework.boot.web.embedded.undertow.UndertowWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,7 +38,7 @@ public class SecurityConfiguration {
     private final CustomAuthorityUtils authorityUtils; // 추가
 
     public SecurityConfiguration(JwtTokenizer jwtTokenizer,
-                                   CustomAuthorityUtils authorityUtils) {
+                                 CustomAuthorityUtils authorityUtils) {
         this.jwtTokenizer = jwtTokenizer;
         this.authorityUtils = authorityUtils;
     }
@@ -60,9 +63,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.POST, "/users/signup").permitAll()
                         .antMatchers(HttpMethod.POST, "/users/login").permitAll()
-                        .antMatchers(HttpMethod.PATCH, "/users/edit/{userId}").authenticated()
+                        .antMatchers(HttpMethod.PATCH, "/users/edit/{userId}").permitAll()
                         .antMatchers(HttpMethod.GET, "/users/{userId}").permitAll()
-                        .antMatchers(HttpMethod.DELETE, "/users/delete/{userId}").authenticated()
+                        .antMatchers(HttpMethod.DELETE, "/users/delete/{userId}").permitAll()
                         .anyRequest().permitAll()
                 );
         return http.build();
