@@ -1,6 +1,7 @@
 package com.codestates.back.question;
 
 import com.codestates.back.domain.answer.dto.AnswerDto;
+import com.codestates.back.domain.answer.dto.EditDto;
 import com.codestates.back.domain.question.application.QuestionService;
 import com.codestates.back.domain.question.controller.QuestionController;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
@@ -62,10 +63,11 @@ public class QuestionApiTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @DisplayName("질문 전체 목록")
+    @DisplayName("특정 페이지 15개 질문 목록 조회")
     @Test
     public void getAllQuestionsTest() throws Exception {
         // given
+        int pageNumber = 1;
         QuestionDto questionDto1 = new QuestionDto(
                 1L,
                 "질문제목1",
@@ -76,38 +78,54 @@ public class QuestionApiTest {
                 2L,
                 "질문제목2",
                 "질문답변2",
-                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
+                LocalDateTime.of(2023, 7, 8, 7, 7, 7)
+        );
+        QuestionDto questionDto3 = new QuestionDto(
+                3L,
+                "질문제목3",
+                "질문답변3",
+                LocalDateTime.of(2023, 7, 9, 7, 7, 7)
         );
         List<QuestionDto> questionDtos = new ArrayList<>();
-        questionDtos.add(questionDto1);
+        questionDtos.add(questionDto3);
         questionDtos.add(questionDto2);
-        given(questionService.findAllQuestions()).willReturn(questionDtos);
+        questionDtos.add(questionDto1);
+        given(questionService.countAllQuestions()).willReturn(3L);
+        given(questionService.findQuestions(Mockito.anyInt())).willReturn(questionDtos);
 
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question")
+                        get("/questions/page/{page-number}", pageNumber)
                 );
 
         // then
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(questionDtos.get(0).getId()))
-                .andExpect(jsonPath("$[0].title").value(questionDtos.get(0).getTitle()))
-                .andExpect(jsonPath("$[0].body").value(questionDtos.get(0).getBody()))
-                .andExpect(jsonPath("$[1].id").value(questionDtos.get(1).getId()))
-                .andExpect(jsonPath("$[1].title").value(questionDtos.get(1).getTitle()))
-                .andExpect(jsonPath("$[1].body").value(questionDtos.get(1).getBody()))
+                .andExpect(jsonPath("$.allQuestionNumber").value(3))
+                .andExpect(jsonPath("$.questionsList.[0].id").value(questionDtos.get(0).getId()))
+                .andExpect(jsonPath("$.questionsList.[0].title").value(questionDtos.get(0).getTitle()))
+                .andExpect(jsonPath("$.questionsList.[0].body").value(questionDtos.get(0).getBody()))
+                .andExpect(jsonPath("$.questionsList.[1].id").value(questionDtos.get(1).getId()))
+                .andExpect(jsonPath("$.questionsList.[1].title").value(questionDtos.get(1).getTitle()))
+                .andExpect(jsonPath("$.questionsList.[1].body").value(questionDtos.get(1).getBody()))
+                .andExpect(jsonPath("$.questionsList.[2].id").value(questionDtos.get(2).getId()))
+                .andExpect(jsonPath("$.questionsList.[2].title").value(questionDtos.get(2).getTitle()))
+                .andExpect(jsonPath("$.questionsList.[2].body").value(questionDtos.get(2).getBody()))
                 .andDo(document("get-allQuestions",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
+                        pathParameters(
+                                parameterWithName("page-number").description("페이지 번호(최신순 정렬)")
+                        ),
                         responseFields(
                                 List.of(
-                                        fieldWithPath("[]").description("전체 응답"),
-                                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("질문 아이디"),
-                                        fieldWithPath("[].title").type(JsonFieldType.STRING).description("질문 제목"),
-                                        fieldWithPath("[].body").type(JsonFieldType.STRING).description("질문 내용"),
-                                        fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("생성 시간")
+                                        fieldWithPath("allQuestionNumber").type(JsonFieldType.NUMBER).description("DB에 저장된 전체질문 갯수"),
+                                        fieldWithPath("questionsList").type(JsonFieldType.ARRAY).description("특정 페이지 최신순 15개 질문 목록"),
+                                        fieldWithPath("questionsList[].id").type(JsonFieldType.NUMBER).description("질문 아이디"),
+                                        fieldWithPath("questionsList[].title").type(JsonFieldType.STRING).description("질문 제목"),
+                                        fieldWithPath("questionsList[].body").type(JsonFieldType.STRING).description("질문 내용"),
+                                        fieldWithPath("questionsList[].createdAt").type(JsonFieldType.STRING).description("질문 최초 생성 시간")
                                 )
                         )
                 ));
@@ -120,7 +138,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/ask")
+                        get("/questions/ask")
                 );
 
         // then
@@ -149,7 +167,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        post("/question/ask")
+                        post("/questions/ask")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -212,7 +230,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/{question-id}", questionId)
+                        get("/questions/{question-id}", questionId)
                 );
 
         // then
@@ -251,21 +269,34 @@ public class QuestionApiTest {
     public void updateQuestionPageTest() throws Exception {
         // given
         long questionId = 1L;
+        QuestionDto questionDto = new QuestionDto(
+                1L,
+                "질문 제목",
+                "질문 했던 내용",
+                LocalDateTime.of(2023, 7, 7, 7, 7, 7)
+        );
+        given(questionService.findQuestion(Mockito.anyLong())).willReturn(questionDto);
 
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        get("/question/{question-id}/edit", questionId)
+                        get("/questions/{question-id}/edit", questionId)
                 );
 
         // then
         actions
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.body").value(questionDto.getBody()))
                 .andDo(document("get-questionUpdatePage-byQuestionId",
                         getRequestPreProcessor(),
                         getResponsePreProcessor(),
                         pathParameters(
                                 parameterWithName("question-id").description("질문 아이디")
+                        ),
+                        responseFields(
+                                List.of(
+                                        fieldWithPath("body").type(JsonFieldType.STRING).description("질문 했던 내용")
+                                )
                         )
                 ));
     }
@@ -289,7 +320,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        patch("/question/{question-id}/edit", questionId)
+                        patch("/questions/{question-id}/edit", questionId)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(content)
@@ -337,7 +368,7 @@ public class QuestionApiTest {
         // when
         ResultActions actions =
                 mockMvc.perform(
-                        delete("/question/{question-id}", questionId)
+                        delete("/questions/{question-id}", questionId)
                 );
 
         // then

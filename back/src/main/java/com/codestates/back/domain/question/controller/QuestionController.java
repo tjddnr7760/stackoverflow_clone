@@ -1,8 +1,10 @@
 package com.codestates.back.domain.question.controller;
 
+import com.codestates.back.domain.answer.dto.EditDto;
 import com.codestates.back.domain.question.application.QuestionService;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
+import com.codestates.back.domain.question.controller.dto.QuestionsPageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +16,7 @@ import java.util.List;
 @Slf4j
 @CrossOrigin
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/questions")
 public class QuestionController {
 
     private final QuestionService questionService;
@@ -25,12 +27,13 @@ public class QuestionController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public List<QuestionDto> directQuestionsPage() {
+    @GetMapping("/page/{page-number}")
+    public QuestionsPageDto directQuestionsPage(@PathVariable("page-number") int page) {
         // 질문 전체 목록 다 긁어와서 보내주기(페이징 기능)
-        List<QuestionDto> questionsDtoList = questionService.findAllQuestions();
+        long size = questionService.countAllQuestions();
+        List<QuestionDto> questionsDtoList = questionService.findQuestions(page);
 
-        return questionsDtoList;
+        return new QuestionsPageDto(size, questionsDtoList);
     }
 
     @GetMapping("/ask")
@@ -61,10 +64,14 @@ public class QuestionController {
         return questionAnswersDto;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{questionId}/edit")
-    public ResponseEntity directQuestionEditPage(@PathVariable("questionId") long questionId) {
+    public EditDto directQuestionEditPage(@PathVariable("questionId") long questionId) {
+        QuestionDto questionDto = questionService.findQuestion(questionId);
+        EditDto editDto = new EditDto(questionDto.getBody());
+
         // 질문 수정 페이지 이동
-        return new ResponseEntity(HttpStatus.OK);
+        return editDto;
     }
 
     @ResponseStatus(HttpStatus.OK)

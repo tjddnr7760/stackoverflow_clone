@@ -12,9 +12,14 @@ import com.codestates.back.domain.user.repository.UserRepository;
 import com.codestates.back.global.exception.BusinessLogicException;
 import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,10 +39,32 @@ public class QuestionServiceV1 implements QuestionService{
     }
 
     @Override
-    public List<QuestionDto> findAllQuestions() {
-        List<Question> questionV1s = questionRepository.findAll();
-        List<QuestionDto> questionDtos = questionMapper.questionToQuestionDtos(questionV1s);
+    public List<QuestionDto> findQuestions(int page) {
+        int pageSize = 15;
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
+        Page<Question> result = questionRepository.findAll(pageRequest);
+
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (Question question : result.getContent()) {
+            questionDtos.add(questionMapper.questionToQuestionDto(question));
+        }
+
         return questionDtos;
+    }
+
+    @Override
+    public long countAllQuestions() {
+        return questionRepository.count();
+    }
+
+    @Override
+    public QuestionDto findQuestion(long questionId) {
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        Question question = optionalQuestion.orElseThrow(() ->
+                // 질문 아이디로 질문 못찾을시
+                new BusinessLogicException(ExceptionCode.QUESTION_NOT_FOUND));
+
+        return questionMapper.questionToQuestionDto(question);
     }
 
     @Override

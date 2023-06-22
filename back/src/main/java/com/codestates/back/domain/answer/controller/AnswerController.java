@@ -1,6 +1,7 @@
 package com.codestates.back.domain.answer.controller;
 
 import com.codestates.back.domain.answer.dto.AnswerDto;
+import com.codestates.back.domain.answer.dto.EditDto;
 import com.codestates.back.domain.answer.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,10 +36,14 @@ public class AnswerController {
         return answerService.save(answerDto, questionId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{answer-id}/edit")
-        public ResponseEntity directAnswerEditPage(@PathVariable("answer-id") long answerId) {
-        // 답변 페이지 이동
-        return new ResponseEntity<>(HttpStatus.OK);
+        public EditDto directAnswerEditPage(@PathVariable("answer-id") long answerId) {
+        AnswerDto answerDto = answerService.findAnswer(answerId);
+        EditDto editDto = new EditDto(answerDto.getBody());
+
+        // 답변 수정 페이지 이동
+        return editDto;
     }
 
     @ResponseStatus(HttpStatus.OK)
