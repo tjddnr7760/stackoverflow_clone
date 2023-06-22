@@ -39,6 +39,8 @@ public class AnswerService {
         Answer answer = answerMapper.answerDtoToAnswer(answerDto);
         answer.setQuestion(question);
         question.getAnswers().add(answer);
+        answer.setUser(user);
+        user.getAnswers().add(answer);
         Answer save = answerRepository.save(answer);
 
         return answerMapper.answerToAnswerDto(save);

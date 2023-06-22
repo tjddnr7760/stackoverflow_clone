@@ -10,6 +10,7 @@ import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.exception.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -45,25 +46,21 @@ public class QuestionController {
     }
 
     @GetMapping("/ask")
-    public ResponseEntity directAskQuestionPage(Authentication authentication) {
+    public ResponseEntity directAskQuestionPage(HttpRequest httpRequest) {
         // 질문 등록 페이지로 이동, 넘겨줄 데이터 없음
         // 토큰 있으면 바로 글쓰기 페이지로
-        if (authentication.getName() != null) {
+        String authorization = httpRequest.getHeaders().getFirst("Authorization");
+        if (authorization != null && authorization.startsWith("Bearer")) {
             return new ResponseEntity(HttpStatus.OK);
-        }
-
-        // 토큰 없으면 로그인 페이지로 리다이렉트
-        if (authentication.getName() == null) {
+        } else {
             URI location = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
                     .path("/users/login")
                     .build()
                     .toUri();
 
-            return ResponseEntity.created(location).body(HttpStatus.OK);
+            return ResponseEntity.created(location).body("로그인을 먼저 진행하세요");
         }
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -104,8 +101,8 @@ public class QuestionController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{questionId}/edit")
     public Object editButtonQuestion(@PathVariable("questionId") long questionId,
-                                          @RequestBody QuestionDto questionDto,
-                                          Authentication authentication) {
+                                     @RequestBody QuestionDto questionDto,
+                                     Authentication authentication) {
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
         if (userByEmail.getQuestions().contains(questionService.findQuestion(questionId))) {
@@ -120,7 +117,7 @@ public class QuestionController {
 
     @DeleteMapping("/{questionId}")
     public Object deleteButtonQuestion(@PathVariable("questionId") long questionId,
-                                               Authentication authentication) {
+                                       Authentication authentication) {
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
         if (userByEmail.getQuestions().contains(questionService.findQuestion(questionId))) {
