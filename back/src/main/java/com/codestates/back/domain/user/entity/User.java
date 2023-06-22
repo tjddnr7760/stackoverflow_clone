@@ -22,12 +22,13 @@ public class User extends TimeTracker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column
+    @Column(nullable = false, updatable = false, unique = true)
     private String email;
-    @Column
+    @Column(nullable = false)
     private String password;
-    @Column
+    @Column(nullable = false, unique = true)
     private String displayName;
+
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Question> questions = new ArrayList<>();
