@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
 
-        this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);  // 추가
+        String successMessage = "{\"message\":\"토큰이 성공적으로 반환되었습니다\"}";
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.print(successMessage);
+        writer.flush();
+
+        this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }
 
     private String delegateAccessToken(User user) {

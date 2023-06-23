@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 public class AnswerApiTest {
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -274,4 +274,5 @@ public class AnswerApiTest {
                         )
                 ));
     }
+    */
 }

@@ -52,6 +52,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
                 request.setAttribute("exception", ee);
             } catch (Exception e) {
                 log.info("검증되지 않는 사용자");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 접근입니다.");
                 return;
             }
         }

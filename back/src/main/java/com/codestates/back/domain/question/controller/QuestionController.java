@@ -5,6 +5,7 @@ import com.codestates.back.domain.question.application.QuestionService;
 import com.codestates.back.domain.question.controller.dto.QuestionAnswersDto;
 import com.codestates.back.domain.question.controller.dto.QuestionDto;
 import com.codestates.back.domain.question.controller.dto.QuestionsPageDto;
+import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.exception.response.ErrorResponse;
@@ -112,7 +113,13 @@ public class QuestionController {
                                      Authentication authentication) {
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
-        if (userByEmail.getQuestions().contains(questionService.findQuestion(questionId))) {
+
+        boolean containsAnswer = userByEmail.getQuestions()
+                .stream()
+                .map(Question::getId)
+                .anyMatch(id -> id.equals(questionId));
+
+        if (containsAnswer) {
             questionDto.setQuestionId(questionId);
             QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
 
@@ -127,7 +134,13 @@ public class QuestionController {
                                        Authentication authentication) {
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
-        if (userByEmail.getQuestions().contains(questionService.findQuestion(questionId))) {
+
+        boolean containsAnswer = userByEmail.getQuestions()
+                .stream()
+                .map(Question::getId)
+                .anyMatch(id -> id.equals(questionId));
+
+        if (containsAnswer) {
             questionService.deleteById(questionId);
 
             return new ResponseEntity(HttpStatus.NO_CONTENT);

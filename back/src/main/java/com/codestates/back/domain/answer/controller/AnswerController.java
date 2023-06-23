@@ -3,6 +3,7 @@ package com.codestates.back.domain.answer.controller;
 import com.codestates.back.domain.answer.dto.AnswerDto;
 import com.codestates.back.domain.answer.dto.EditAnswerDto;
 import com.codestates.back.domain.answer.dto.EditDto;
+import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.answer.service.AnswerService;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.service.UserService;
@@ -79,7 +80,13 @@ public class AnswerController {
         // 답변 수정
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
-        if (userByEmail.getAnswers().contains(answerService.findAnswer(answerId))) {
+
+        boolean containsAnswer = userByEmail.getAnswers()
+                .stream()
+                .map(Answer::getId)
+                .anyMatch(id -> id.equals(answerId));
+
+        if (containsAnswer) {
             EditAnswerDto editAnswerDto = answerService.updateAnswer(answerId, answerDto);
 
             return editAnswerDto;
@@ -94,7 +101,13 @@ public class AnswerController {
         // 답변 삭제
         String email = authentication.getName();
         User userByEmail = userService.findUserByEmail(email);
-        if (userByEmail.getAnswers().contains(answerService.findAnswer(answerId))) {
+
+        boolean containsAnswer = userByEmail.getAnswers()
+                .stream()
+                .map(Answer::getId)
+                .anyMatch(id -> id.equals(answerId));
+
+        if (containsAnswer) {
             answerService.deleteAnswerById(answerId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
