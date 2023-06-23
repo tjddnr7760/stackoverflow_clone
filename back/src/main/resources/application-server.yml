@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/so_clone?useSSL=false
+    url: jdbc:mysql://localhost:{MY_PORT#}/{MY_SCHEMA_NAME}?useSSL=false
     username: root
-    password: Fndl84261234!
+    password: ${MY_MYSQL_DB_PASSWORD}
     driverClassName: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
