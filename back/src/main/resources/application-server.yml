@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/so_clone?useSSL=false
+    username: root
+    password: Fndl84261234!
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: update  # 연관관계 매핑에 따른 DB 자동생성. 앱을 껐다 키면 리셋되어 새로 생성됨. ddl-auto: update 로 할 시 데이터가
+                        # 휘발되지 않고 남음
+    show-sql: true      # 인텔리제이 로그에 SQL 쿼리문을 띄움. 쿼리가 어떻게 실행되는지 추적할 수 있음.
+    properties:
+      hibernate:
+        format_sql: true
+jwt:
+  key:
+    secret: ${JWT_SECRET_KEY}
+  access-token-expiration-minutes: 1440
+  refresh-token-expiration-minutes: 720
+logging:
+  level:
+    org.springframework.security: DEBUG
+server:
+  servlet:
+    encoding:
+      force-response: true

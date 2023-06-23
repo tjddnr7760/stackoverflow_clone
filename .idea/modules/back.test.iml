@@ -36,6 +36,7 @@
     <orderEntry type="library" name="Gradle: org.springframework:spring-webmvc:5.3.27" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:2.7.12" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-web:5.3.27" level="project" />
+    <orderEntry type="library" name="Gradle: com.mysql:mysql-connector-j:8.0.33" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-test-autoconfigure:2.7.12" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-test:2.7.12" level="project" />
     <orderEntry type="library" name="Gradle: com.jayway.jsonpath:json-path:2.7.0" level="project" />
@@ -104,7 +105,6 @@
     <orderEntry type="library" name="Gradle: org.ow2.asm:asm:9.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.jsonwebtoken:jjwt-impl:0.11.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: io.jsonwebtoken:jjwt-jackson:0.11.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.h2database:h2:2.1.214" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: javax.servlet:javax.servlet-api:4.0.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.junit.jupiter:junit-jupiter-engine:5.8.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.objenesis:objenesis:3.2" level="project" />
