@@ -47,10 +47,18 @@ public class UserDto {
     public static class Response {
         private long userId;
         private String email;
-    //    private String password;
         private String displayName;
         private String message;
+    }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    public static class UserResponse {
+        private long userId;
+        private String email;
+        private String displayName;
     }
 
 

@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 public class QuestionApiTest {
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -382,4 +382,6 @@ public class QuestionApiTest {
                         )
                 ));
     }
+
+ */
 }

@@ -3,6 +3,8 @@ package com.codestates.back.domain.user.entity;
 import com.codestates.back.domain.answer.entity.Answer;
 import com.codestates.back.domain.question.domain.Question;
 import com.codestates.back.global.audit.TimeTracker;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,15 +26,19 @@ public class User extends TimeTracker {
 
     @Column(nullable = false, updatable = false, unique = true)
     private String email;
+
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false, unique = true)
     private String displayName;
 
-
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Question> questions = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Answer> answers = new ArrayList<>();
 

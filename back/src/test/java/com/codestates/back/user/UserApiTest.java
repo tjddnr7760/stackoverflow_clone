@@ -6,6 +6,7 @@ import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.mapper.UserMapper;
 import com.codestates.back.domain.user.repository.UserRepository;
 import com.codestates.back.domain.user.service.UserService;
+import com.codestates.back.global.auth.dto.LoginDto;
 import com.codestates.back.global.auth.jwt.JwtTokenizer;
 import com.codestates.back.global.auth.userdetails.CustomUserDetails;
 import com.codestates.back.global.auth.userdetails.CustomUserDetailsService;
@@ -14,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -29,13 +29,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import com.google.gson.Gson;
 import org.springframework.test.web.servlet.ResultActions;
 
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.codestates.back.util.ApiDocumentUtils.getRequestPreProcessor;
 import static com.codestates.back.util.ApiDocumentUtils.getResponsePreProcessor;
@@ -52,12 +54,8 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Collections;
-import java.util.List;
 
 @WebMvcTest(UserController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -135,6 +133,70 @@ public class UserApiTest {
                 ));
     }
 
+    @DisplayName("로그인 테스트")
+    @Test
+    public void loginTest() throws Exception {
+        // given
+        LoginDto loginDto = new LoginDto("test@gmail.com", "test1234");
+        User mockUser = new User();
+        mockUser.setEmail("test@gmail.com");
+        mockUser.setDisplayName("testDisplayName");
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", mockUser.getEmail());
+        String subject = mockUser.getEmail();
+        Date expiration = jwtTokenizer.getTokenExpiration(jwtTokenizer.getAccessTokenExpirationMinutes());
+        String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
+
+        // Mock the behavior of user authentication and token creation
+        String mockToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRqZGRucjc3NjBAbmF2ZXIuY29tIiwic3ViIjoidGpkZG5yNzc2MEBuYXZlci5jb20iLCJpYXQiOjE2ODc0NzA0MjQsImV4cCI6MTY4NzU1NjgyNH0.k66dpcHHqI02Ijc1V8fattleaWfwjyolU2-ym-1h5Ks";
+        given(jwtTokenizer.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey)).willReturn(mockToken);
+
+        String content = gson.toJson(loginDto);
+
+        // when
+        ResultActions actions = mockMvc.perform(
+                post("/users/login")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+        );
+
+        // then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token", is(mockToken)))
+                .andDo(document("User Login",
+                        requestFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("token").type(JsonFieldType.STRING).description("JWT token")
+                        )
+                ));
+    }
+
+    @DisplayName("로그아웃 테스트")
+    @Test
+    public void logoutTest() {
+        // given
+
+        // when
+
+        // then
+    }
+
+    @DisplayName("마이페이지 테스트")
+    @Test
+    public void mypageTest() {
+        // given
+
+        // when
+
+        // then
+    }
+
     @DisplayName("회원정보 수정 테스트")
     @Test
     @WithMockUser(username = "updatetest@gmail.com", roles = {"USER"})
@@ -195,5 +257,13 @@ public class UserApiTest {
                 ));
     }
 
+    @DisplayName("회원정보 삭제 테스트")
+    @Test
+    public void deleteTest() {
+        // given
 
+        // when
+
+        // then
+    }
 }

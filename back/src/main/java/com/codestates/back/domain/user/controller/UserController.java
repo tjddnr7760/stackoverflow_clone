@@ -60,7 +60,9 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    public ResponseEntity<?> logout(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    Authentication authentication) {
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "로그아웃 되었습니다. 토큰을 파괴해 주세요");
 
