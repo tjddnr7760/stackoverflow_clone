@@ -11,18 +11,18 @@ import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.exception.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.List;
 
 @Slf4j
-@CrossOrigin
+//@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH, RequestMethod.DELETE})
 @RestController
 @RequestMapping("/questions")
 public class QuestionController {
@@ -34,6 +34,14 @@ public class QuestionController {
     public QuestionController(QuestionService questionService, UserService userService) {
         this.questionService = questionService;
         this.userService = userService;
+    }
+
+    @RequestMapping(value = "/questions/page/*", method = RequestMethod.OPTIONS)
+    public void handleOptionsRequest(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // 유저 정보 넘어와야함

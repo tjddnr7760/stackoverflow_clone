@@ -1,7 +1,5 @@
 package com.codestates.back.global.auth.config;
 
-import com.codestates.back.domain.user.repository.UserRepository;
-import com.codestates.back.domain.user.service.UserService;
 import com.codestates.back.global.auth.filter.JwtAuthenticationFilter;
 import com.codestates.back.global.auth.filter.JwtVerificationFilter;
 import com.codestates.back.global.auth.handler.UserAccessDeniedHandler;
@@ -10,7 +8,6 @@ import com.codestates.back.global.auth.handler.UserAuthenticationFailureHandler;
 import com.codestates.back.global.auth.handler.UserAuthenticationSuccessHandler;
 import com.codestates.back.global.auth.jwt.JwtTokenizer;
 import com.codestates.back.global.auth.utils.CustomAuthorityUtils;
-import org.springframework.boot.web.embedded.undertow.UndertowWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -49,7 +46,8 @@ public class SecurityConfiguration {
                 .headers().frameOptions().sameOrigin()
                 .and()
                 .csrf().disable()
-                .cors(withDefaults())
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .formLogin().disable()
@@ -66,6 +64,8 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.PATCH, "/users/edit/{userId}").permitAll()
                         .antMatchers(HttpMethod.GET, "/users/{userId}").permitAll()
                         .antMatchers(HttpMethod.DELETE, "/users/delete/{userId}").permitAll()
+                        .antMatchers("/questions/**").permitAll()
+                        .antMatchers("answer/**").permitAll()
                         .anyRequest().permitAll()
                 );
         return http.build();
@@ -77,15 +77,20 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PATCH", "DELETE"));
+//        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.addExposedHeader("Authorization");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
-
 
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
         @Override
