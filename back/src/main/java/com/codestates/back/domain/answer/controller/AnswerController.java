@@ -80,19 +80,24 @@ public class AnswerController {
                                 Authentication authentication) {
         // 답변 수정
         String email = authentication.getName();
-        User userByEmail = userService.findUserByEmail(email);
 
-        boolean containsAnswer = userByEmail.getAnswers()
-                .stream()
-                .map(Answer::getId)
-                .anyMatch(id -> id.equals(answerId));
+        try {
+            User userByEmail = userService.findUserByEmail(email);
 
-        if (containsAnswer) {
-            EditAnswerDto editAnswerDto = answerService.updateAnswer(answerId, answerDto);
+            boolean containsAnswer = userByEmail.getAnswers()
+                    .stream()
+                    .map(Answer::getId)
+                    .anyMatch(id -> id.equals(answerId));
 
-            return editAnswerDto;
-        } else {
-            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
+            if (containsAnswer) {
+                EditAnswerDto editAnswerDto = answerService.updateAnswer(answerId, answerDto);
+
+                return editAnswerDto;
+            } else {
+                return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
+            }
+        } catch (Exception e) {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자 토큰이 DB에서 조회되지 않습니다.");
         }
     }
 
@@ -101,18 +106,23 @@ public class AnswerController {
                                        Authentication authentication) {
         // 답변 삭제
         String email = authentication.getName();
-        User userByEmail = userService.findUserByEmail(email);
 
-        boolean containsAnswer = userByEmail.getAnswers()
-                .stream()
-                .map(Answer::getId)
-                .anyMatch(id -> id.equals(answerId));
+        try {
+            User userByEmail = userService.findUserByEmail(email);
 
-        if (containsAnswer) {
-            answerService.deleteAnswerById(answerId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
+            boolean containsAnswer = userByEmail.getAnswers()
+                    .stream()
+                    .map(Answer::getId)
+                    .anyMatch(id -> id.equals(answerId));
+
+            if (containsAnswer) {
+                answerService.deleteAnswerById(answerId);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 답변이 아닙니다.");
+            }
+        } catch (Exception e) {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자 토큰이 DB에서 조회되지 않습니다.");
         }
     }
 }

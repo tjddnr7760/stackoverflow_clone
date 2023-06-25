@@ -120,20 +120,25 @@ public class QuestionController {
                                      @RequestBody QuestionDto questionDto,
                                      Authentication authentication) {
         String email = authentication.getName();
-        User userByEmail = userService.findUserByEmail(email);
 
-        boolean containsAnswer = userByEmail.getQuestions()
-                .stream()
-                .map(Question::getId)
-                .anyMatch(id -> id.equals(questionId));
+        try {
+            User userByEmail = userService.findUserByEmail(email);
 
-        if (containsAnswer) {
-            questionDto.setQuestionId(questionId);
-            QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
+            boolean containsAnswer = userByEmail.getQuestions()
+                    .stream()
+                    .map(Question::getId)
+                    .anyMatch(id -> id.equals(questionId));
 
-            return resQuestionDto;
-        } else {
-            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 질문이 아닙니다.");
+            if (containsAnswer) {
+                questionDto.setQuestionId(questionId);
+                QuestionDto resQuestionDto = questionService.updateQuestion(questionDto);
+
+                return resQuestionDto;
+            } else {
+                return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 질문이 아닙니다.");
+            }
+        } catch (Exception e) {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자 토큰이 DB에서 조회되지 않습니다.");
         }
     }
 
@@ -141,19 +146,24 @@ public class QuestionController {
     public Object deleteButtonQuestion(@PathVariable("questionId") long questionId,
                                        Authentication authentication) {
         String email = authentication.getName();
-        User userByEmail = userService.findUserByEmail(email);
 
-        boolean containsAnswer = userByEmail.getQuestions()
-                .stream()
-                .map(Question::getId)
-                .anyMatch(id -> id.equals(questionId));
+        try {
+            User userByEmail = userService.findUserByEmail(email);
 
-        if (containsAnswer) {
-            questionService.deleteById(questionId);
+            boolean containsAnswer = userByEmail.getQuestions()
+                    .stream()
+                    .map(Question::getId)
+                    .anyMatch(id -> id.equals(questionId));
 
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        } else {
-            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 질문이 아닙니다.");
+            if (containsAnswer) {
+                questionService.deleteById(questionId);
+
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
+            } else {
+                return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자가 등록한 질문이 아닙니다.");
+            }
+        } catch (Exception e) {
+            return ErrorResponse.of(HttpStatus.NOT_ACCEPTABLE, "사용자 토큰이 DB에서 조회되지 않습니다.");
         }
     }
 }
