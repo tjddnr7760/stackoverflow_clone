@@ -53,11 +53,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
 
-        String successMessage = "{\"message\":\"토큰이 성공적으로 반환되었습니다\"}";
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("userId", user.getUserId());
+        userInfo.put("email", user.getEmail());
+        userInfo.put("displayName", user.getDisplayName());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(userInfo);
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter writer = response.getWriter();
-        writer.print(successMessage);
+        writer.print(userJson);
         writer.flush();
 
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
