@@ -46,6 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication authResult) throws ServletException, IOException {
         User user = (User) authResult.getPrincipal();
+        System.out.println("user = " + user.getDisplayName());
 
         String accessToken = delegateAccessToken(user);
         String refreshToken = delegateRefreshToken(user);
@@ -55,8 +56,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("userId", user.getUserId());
+        System.out.println("user.getUserId() = " + user.getUserId());
         userInfo.put("email", user.getEmail());
+        System.out.println("user.getEmail() = " + user.getEmail());
         userInfo.put("displayName", user.getDisplayName());
+        System.out.println("user.getDisplayName() = " + user.getDisplayName());
 
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(userInfo);

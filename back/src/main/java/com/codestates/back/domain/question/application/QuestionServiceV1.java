@@ -52,6 +52,7 @@ public class QuestionServiceV1 implements QuestionService{
         List<QuestionDto> questionDtos = new ArrayList<>();
         for (Question question : result.getContent()) {
             QuestionDto questionDto = questionMapper.questionToQuestionDto(question);
+            questionDto.setAnswerCount(question.getAnswers().size());
             questionDtos.add(questionDto);
         }
 

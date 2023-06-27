@@ -15,7 +15,7 @@ public class CustomUserDetails extends User implements UserDetails {
         setUserId((user.getUserId()));
         setEmail(user.getEmail());
         setPassword(user.getPassword());
-        setDisplayName(getUsername());
+        setDisplayName(user.getDisplayName());
     }
 
     @Override

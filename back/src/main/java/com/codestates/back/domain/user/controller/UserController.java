@@ -1,6 +1,5 @@
 package com.codestates.back.domain.user.controller;
 
-
 import com.codestates.back.domain.user.dto.UserDto;
 import com.codestates.back.domain.user.entity.User;
 import com.codestates.back.domain.user.mapper.UserMapper;
@@ -98,15 +97,17 @@ public class UserController {
     }
 
     @PatchMapping("/edit")
-    public ResponseEntity patchUser(Authentication authentication,
-                                    @Valid @RequestBody UserDto.Update requestBody) {
+    public ResponseEntity patchUser(@RequestBody UserDto.Update requestBody,
+                                    Authentication authentication) {
         try {
+            log.info("여기 부분 실행됨1");
             String email = authentication.getName();
             User foundUser = userService.findUserByEmail(email);
             foundUser.setDisplayName(requestBody.getDisplayName());
-            foundUser.setPassword(requestBody.getPassword());
+//            foundUser.setPassword(requestBody.getPassword());
 
             User user = userService.updateUser(foundUser);
+            log.info("여기 부분 실행됨3");
             return new ResponseEntity<>(mapper.userToUserResponse(user), HttpStatus.OK);
         } catch (NullPointerException e) {
             e.printStackTrace();

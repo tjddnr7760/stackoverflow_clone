@@ -20,8 +20,10 @@ public class Question extends TimeTracker {
     @Column(name = "question_id")
     private Long id;
 
+    @Column(length = 150)
     private String title;
 
+    @Column(length = 2400)
     private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)

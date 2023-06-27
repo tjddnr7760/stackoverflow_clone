@@ -17,6 +17,7 @@ public class Answer extends TimeTracker {
     @Column(name = "answer_id")
     private Long id;
 
+    @Column(length = 2400)
     private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -9,6 +9,7 @@ import com.codestates.back.global.auth.userdetails.CustomUserDetails;
 import com.codestates.back.global.auth.utils.CustomAuthorityUtils;
 import com.codestates.back.global.exception.BusinessLogicException;
 import com.codestates.back.global.exception.exceptioncode.ExceptionCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-
+@Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -59,12 +60,13 @@ public class UserService {
 
         // Display Name 수정 로직. 만약 존재하는 유저이고 새 Display Name이 입력됐다면
         // 이름을 수정한다.
+        log.info("여기 부분 실행됨2");
         Optional.ofNullable(user.getDisplayName())
                 .ifPresent(displayName -> findUser.setDisplayName(displayName));
 
         // 비밀번호 수정 로직. 만약 존재하는 유저이고 새 비밀번호가 입력됐다면 수정
-        Optional.ofNullable(user.getPassword())
-                .ifPresent(password -> findUser.setPassword(passwordEncoder.encode(password)));
+//        Optional.ofNullable(user.getPassword())
+//                .ifPresent(password -> findUser.setPassword(passwordEncoder.encode(password)));
 
         return userRepository.save(findUser);
     }

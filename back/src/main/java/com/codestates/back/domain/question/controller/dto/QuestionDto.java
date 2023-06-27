@@ -16,6 +16,7 @@ public class QuestionDto {
     private String title;
     private String body;
     private LocalDateTime createdAt;
+    private int answerCount;
     private UserDto.UserResponse user;
 
     public void setQuestionId(Long id) {
@@ -24,5 +25,9 @@ public class QuestionDto {
 
     public void setUser(UserDto.UserResponse user) {
         this.user = user;
+    }
+
+    public void setAnswerCount(int answerCount) {
+        this.answerCount = answerCount;
     }
 }

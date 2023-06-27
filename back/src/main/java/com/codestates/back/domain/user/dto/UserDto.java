@@ -28,16 +28,9 @@ public class UserDto {
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class Update {
-
-        @NotBlank
-        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
-                message = "비밀번호는 영문 및 숫자 조합으로 8자리 이상이어야 합니다.")
-        private String password;
-
-        @NotBlank
         private String displayName;
-
     }
 
     @AllArgsConstructor
@@ -89,6 +82,4 @@ public class UserDto {
         private UserDto.Response userProfile;
         private UserDto.MyPage myPage;
     }
-
-
 }

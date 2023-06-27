@@ -106,6 +106,7 @@ public class QuestionController {
         if (authentication.getName() != null) {
             QuestionDto questionDto = questionService.findQuestion(questionId);
             EditDto editDto = new EditDto(questionDto.getBody());
+            editDto.setTitle(questionDto.getTitle());
 
             // 질문 수정 페이지 이동
             return editDto;
