@@ -6,16 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Calendar;
@@ -26,8 +21,8 @@ import java.util.Map;
 public class JwtTokenizer {
 
     @Getter
-    @Value("${JWT_SECRET_KEY}")
-    private String secretKey;
+//    @Value("${JWT_SECRET_KEY}")
+    private String secretKey = "kevin12341234123412341234123412341234";
 
     @Getter
     @Value("${jwt.access-token-expiration-minutes}")

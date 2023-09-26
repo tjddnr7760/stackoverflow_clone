@@ -42,9 +42,9 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
         if (isLoginCheckPath(request.getRequestURI())) {
             try {
-                logger.info("verification filter active start");
+                log.info("verification filter active start");
                 Map<String, Object> claims = verifyJws(request);
-                logger.info("verifyJws end");
+                log.info("verifyJws end");
                 setAuthenticationToContext(claims);
             } catch (SignatureException se) {
                 request.setAttribute("exception", se);
@@ -56,7 +56,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        logger.info("verification filter active end");
+        log.info("verification filter active end");
         filterChain.doFilter(request, response);
     }
 
